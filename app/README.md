@@ -1,0 +1,3 @@
+Description
+
+PantryPal will help users manage their food inventory by tracking expiration dates. It will feature an intuitive interface, filters, and search options. The app will also include a barcode scanner and grocery list note-taker. Users will be able to register for an account and access their data across multiple devices. PantryPal will help users ensure that their food is stored correctly and not wasted.​

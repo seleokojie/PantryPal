@@ -64,14 +64,15 @@ fun MainScreen() {
     )
 }
 
-//backgroundColor = "#e3ffde".toColor()
+// Preview function for MainScreen
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
     MainScreen()
 }
 
-//will only show when add is the currentRoute
+
+// TopBar Composable function that displays a centered title "Add New Item", only shows on Add route
 @Composable
 fun TopBar() {
     TopAppBar(
@@ -81,7 +82,10 @@ fun TopBar() {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Add New Item", fontSize = 30.sp, fontWeight = FontWeight.Bold )
+                Text(
+                    text = "Add New Item",
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold )
             }
         },
         backgroundColor = "#75b37c".toColor(),
@@ -89,12 +93,14 @@ fun TopBar() {
     )
 }
 
+// Preview function for TopBar
 @Preview(showBackground = true)
 @Composable
 fun TopBarPreview() {
     TopBar()
 }
 
+// BottomNavigationBar Composable function that defines the navigation items and behavior
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
@@ -107,6 +113,7 @@ fun BottomNavigationBar(navController: NavController) {
         backgroundColor = "#75b37c".toColor(),
         contentColor = Color.White
     ) {
+        // Iterate through the navigation items and create BottomNavigationItem for each
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
@@ -118,6 +125,7 @@ fun BottomNavigationBar(navController: NavController) {
                 alwaysShowLabel = true,
                 selected = currentRoute == item.route,
                 onClick = {
+                    // Set up navigation behavior for each item
                     navController.navigate(item.route) {
                         // Pop up to the start destination of the graph to
                         // avoid building up a large stack of destinations
@@ -139,6 +147,7 @@ fun BottomNavigationBar(navController: NavController) {
     }
 }
 
+// Navigation Composable function that sets up the NavHost and routes for each screen
 @Composable
 fun Navigation(navController: NavHostController) {
     NavHost(navController, startDestination = NavigationItem.Home.route) {
@@ -156,6 +165,8 @@ fun Navigation(navController: NavHostController) {
         }
     }
 }
+
+// Preview function for BottomNavigationBar
 @Preview(showBackground = true)
 @Composable
 fun BottomNavigationBarPreview() {

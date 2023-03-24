@@ -3,86 +3,95 @@ package edu.towson.cosc435.meegan.semesterprojectpantrypal
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import edu.towson.cosc435.meegan.semesterprojectpantrypal.ui.theme.SemesterProjectPantryPalTheme
+import androidx.compose.ui.unit.sp
 
+
+// used to create bottomNavigation bar https://johncodeos.com/how-to-create-bottom-navigation-bar-with-jetpack-compose/
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            SemesterProjectPantryPalTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        // Add your content here
-                        StickyBottomNavigationBar()
-                    }
-                }
-            }
+            MainScreen()
         }
     }
 }
 
+//I like using RGB and HEX values for color
+
+fun String.toColor() = Color(android.graphics.Color.parseColor(this))
 @Composable
-fun StickyBottomNavigationBar() {
-    BottomAppBar(
-        modifier = Modifier
-            .height(80.dp)
-            .fillMaxWidth(),
-        backgroundColor = Color(34, 132, 4),
-        cutoutShape = CircleShape,
-        content = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-            ) {
-                BottomNavigationIcon("Home", Icons.Default.Home)
-                BottomNavigationIcon("Grocery", Icons.Default.ShoppingCart)
-                BottomNavigationIcon("Add", Icons.Default.Add)
-                BottomNavigationIcon("Settings", Icons.Default.Settings)
+fun MainScreen() {
+    Scaffold(
+        topBar = { TopBar() },
+        bottomBar = { BottomNavigationBar() },
+        content = { padding -> // We have to pass the scaffold inner padding to our content. That's why we use Box.
+            Box(modifier = Modifier.padding(padding)) {
+                /* Add code later */
             }
-        }
+        },
+        backgroundColor = "#e3ffde".toColor() // Set background color to avoid the white flashing when you switch between screens
     )
 }
 
+@Preview(showBackground = true)
+@Composable
+fun MainScreenPreview() {
+    MainScreen()
+}
 
 @Composable
-fun BottomNavigationIcon(label: String, icon: ImageVector) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        IconButton(
-            onClick = { /* Handle icon button click */ }
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = label,
-                tint = Color.White
+fun TopBar() {
+    TopAppBar(
+        title = { Text(text = stringResource(R.string.app_name), fontSize = 18.sp) },
+        backgroundColor = "#75b37c".toColor(),
+        contentColor = Color.White
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TopBarPreview() {
+    TopBar()
+}
+
+@Composable
+fun BottomNavigationBar() {
+    val items = listOf(
+        NavigationItem.Home,
+        NavigationItem.Settings,
+        NavigationItem.Add,
+        NavigationItem.Grocery,
+    )
+    BottomNavigation(
+        backgroundColor = "#75b37c".toColor(),
+        contentColor = Color.White
+    ) {
+        items.forEach { item ->
+            BottomNavigationItem(
+                icon = { Icon(item.icon, contentDescription = item.title) },
+                label = { Text(text = item.title) },
+                selectedContentColor = Color.White,
+                unselectedContentColor = Color.White.copy(0.4f),
+                alwaysShowLabel = true,
+                selected = false,
+                onClick = {
+                    /* Add code later */
+                }
             )
         }
-        Text(
-            text = label,
-            style = MaterialTheme.typography.caption,
-            color = Color.White
-        )
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun PreviewStickyBottomNavigationBar() {
-    StickyBottomNavigationBar(
-
-    )
+fun BottomNavigationBarPreview() {
+    BottomNavigationBar()
 }

@@ -14,13 +14,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 
-
-
-//NavigationItem.Home,
-//NavigationItem.Grocery,
-//NavigationItem.Add,
-//NavigationItem.Settings
-
+//Description:
+// This code snippet defines a ContentScreens class and four Composable functions: HomeScreen,
+// GroceryScreen, AddScreen, and SettingsScreen. Each function represents a unique content screen
+// within the app, displaying a centered text with the screen's name. The background color of these
+// screens is set to a custom green color, and the text is bold and sized at 25.sp. Additionally,
+// @Preview annotations are used to provide previews of the screens within the Android Studio design
+// surface.
 
 class ContentScreens {
 }

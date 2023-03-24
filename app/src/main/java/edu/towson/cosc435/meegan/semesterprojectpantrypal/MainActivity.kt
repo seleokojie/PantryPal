@@ -1,5 +1,7 @@
 package edu.towson.cosc435.meegan.semesterprojectpantrypal
 
+// used to create bottomNavigation bar https://johncodeos.com/how-to-create-bottom-navigation-bar-with-jetpack-compose/
+// Command + Shift + '-' to minimize parts of code
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -19,8 +22,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
+/**
+ * This file defines the main structure and navigation of the application. It includes the
+ * MainActivity class, which sets the main content view, and Composable functions for the
+ * MainScreen, TopBar, BottomNavigationBar, and Navigation. The navigation system is built
+ * using Jetpack Compose's NavController, and each screen can be accessed via bottom navigation items.
+ */
 
-// used to create bottomNavigation bar https://johncodeos.com/how-to-create-bottom-navigation-bar-with-jetpack-compose/
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,9 +39,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-//I like using RGB and HEX values for color
-
+// Extension function to convert a HEX color string to a Jetpack Compose Color
 fun String.toColor() = Color(android.graphics.Color.parseColor(this))
+
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
@@ -72,7 +81,7 @@ fun TopBar() {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Add New Item", fontSize = 18.sp)
+                Text(text = "Add New Item", fontSize = 30.sp, fontWeight = FontWeight.Bold )
             }
         },
         backgroundColor = "#75b37c".toColor(),
@@ -85,35 +94,6 @@ fun TopBar() {
 fun TopBarPreview() {
     TopBar()
 }
-
-
-//@Composable
-//fun BottomNavigationBar(navController: NavHostController) {
-//    val items = listOf(
-//        NavigationItem.Home,
-//        NavigationItem.Grocery,
-//        NavigationItem.Add,
-//        NavigationItem.Settings
-//    )
-//    BottomNavigation(
-//        backgroundColor = "#75b37c".toColor(),
-//        contentColor = Color.White
-//    ) {
-//        items.forEach { item ->
-//            BottomNavigationItem(
-//                icon = { Icon(item.icon, contentDescription = item.title) },
-//                label = { Text(text = item.title) },
-//                selectedContentColor = Color.White,
-//                unselectedContentColor = Color.White.copy(0.4f),
-//                alwaysShowLabel = true,
-//                selected = false,
-//                onClick = {
-//                    /* Add code later */
-//                }
-//            )
-//        }
-//    }
-//}
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {

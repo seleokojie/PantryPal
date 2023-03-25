@@ -77,7 +77,7 @@ fun GroceryScreen() {
             TextField(
                 value = newItemText.value,
                 onValueChange = { newItemText.value = it },
-                label = { Text("Add item") },
+                label = { Text("Add item to Grocery list") },
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .fillMaxWidth()

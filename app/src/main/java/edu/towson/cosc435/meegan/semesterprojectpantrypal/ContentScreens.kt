@@ -11,7 +11,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +25,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 //Description:
 // This code snippet defines a ContentScreens class and four Composable functions: HomeScreen,
@@ -58,11 +63,17 @@ fun HomeScreenPreview() {
     HomeScreen()
 }
 
+class GroceryViewModel : ViewModel() {
+    val groceryItems = mutableStateListOf<String>()
+    val newItemText = mutableStateOf("")
+    val checkedStates = mutableStateMapOf<String, Boolean>()
+}
 @Composable
 fun GroceryScreen() {
-    val groceryItems = remember { mutableStateListOf<String>() }
-    val newItemText = remember { mutableStateOf("") }
-    val checkedStates = remember { mutableStateMapOf<String, Boolean>() }
+    val viewModel: GroceryViewModel = viewModel()
+    val groceryItems = viewModel.groceryItems
+    val newItemText = viewModel.newItemText
+    val checkedStates = viewModel.checkedStates
 
     Box(
         modifier = Modifier
@@ -101,7 +112,7 @@ fun GroceryScreen() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                            .border(1.dp, Color.LightGray, RoundedCornerShape(4.dp))
+                            .border(1.dp, Color.LightGray, RoundedCornerShape(7.dp))
                             .padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -118,8 +129,9 @@ fun GroceryScreen() {
                             style = MaterialTheme.typography.body1,
                             modifier = Modifier
                                 .weight(1f)
-                                .align(Alignment.CenterVertically),
-                            textAlign = TextAlign.Center,
+                                .align(Alignment.CenterVertically)
+                                .fillMaxWidth()
+                                .wrapContentSize(Alignment.Center),
                             textDecoration = if (checkedStates[item] == true) TextDecoration.LineThrough else TextDecoration.None
                         )
                         IconButton(onClick = {
@@ -134,6 +146,8 @@ fun GroceryScreen() {
         }
     }
 }
+
+
 
 
 

@@ -122,8 +122,14 @@ fun GroceryScreen() {
                             onCheckedChange = { checked ->
                                 checkedStates[item] = checked
                             },
-                            modifier = Modifier.padding(end = 8.dp)
+                            modifier = Modifier.padding(end = 8.dp),
+                            colors = CheckboxDefaults.colors(
+                                checkmarkColor = Color.White,
+                                checkedColor = Color.Black,
+                                uncheckedColor = Color.Black
+                            )
                         )
+
                         Text(
                             text = item,
                             style = MaterialTheme.typography.body1,

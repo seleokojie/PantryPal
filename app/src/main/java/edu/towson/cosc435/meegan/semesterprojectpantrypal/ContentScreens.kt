@@ -11,15 +11,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-
 //Description:
 // This code snippet defines a ContentScreens class and four Composable functions: HomeScreen,
 // GroceryScreen, AddScreen, and SettingsScreen. Each function represents a unique content screen
@@ -153,40 +151,76 @@ fun GroceryScreen() {
     }
 }
 
-
-
-
-
-
 @Preview(showBackground = true)
 @Composable
 fun GroceryScreenPreview() {
     GroceryScreen()
 }
 
+
 @Composable
-fun AddScreen() {
+fun AddScreen(onItemAdded: (String, String, String, String) -> Unit) {
+    val itemName = remember { mutableStateOf(TextFieldValue("")) }
+    val category = remember { mutableStateOf(TextFieldValue("")) }
+    val quantity = remember { mutableStateOf(TextFieldValue("")) }
+    val expirationDate = remember { mutableStateOf(TextFieldValue("")) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background("#e3ffde".toColor())
-            .wrapContentSize(Alignment.Center)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Add View",
-            fontWeight = FontWeight.Bold,
-            color = Color.Black,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            textAlign = TextAlign.Center,
-            fontSize = 25.sp
-        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(value = itemName.value, onValueChange = { itemName.value = it }, label = { Text("Item name") })
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(value = category.value, onValueChange = { category.value = it }, label = { Text("Category") })
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(value = quantity.value, onValueChange = { newValue ->
+            // Restrict input to numbers only
+            if (newValue.text.all { it.isDigit() }) {
+                quantity.value = newValue
+            }
+        }, label = { Text("Quantity") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextField(value = expirationDate.value, onValueChange = { newValue ->
+            // Restrict input to numbers and dashes only
+            if (newValue.text.all { it.isDigit() || it == '-' }) {
+                expirationDate.value = newValue
+            }
+            //NOTE: Was struggling with making this Date Format for some reason, Ill come back later and fix
+        }, label = { Text("Expiration Date (YYYY-MM-DD)") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = {
+            onItemAdded(
+                itemName.value.text,
+                category.value.text,
+                quantity.value.text,
+                expirationDate.value.text
+            )
+        }) {
+            Text("Confirm")
+        }
     }
+
 }
+
+
 
 @Preview(showBackground = true)
 @Composable
 fun AddScreenPreview() {
-    AddScreen()
+    AddScreen(onItemAdded = { itemName, category, quantity, expirationDate ->
+        // Do something with the item information
+        // In terminal
+        println("$itemName added to inventory")
+    })
 }
 
 

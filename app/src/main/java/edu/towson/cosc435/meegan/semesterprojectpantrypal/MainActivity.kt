@@ -158,8 +158,12 @@ fun Navigation(navController: NavHostController) {
             GroceryScreen()
         }
         composable(NavigationItem.Add.route) {
-            AddScreen()
+            AddScreen(onItemAdded = { itemName, category, quantity, expirationDate ->
+                // Do something with the item information
+                println("$itemName added to inventory")
+            })
         }
+
         composable(NavigationItem.Settings.route) {
            SettingsScreen()
         }

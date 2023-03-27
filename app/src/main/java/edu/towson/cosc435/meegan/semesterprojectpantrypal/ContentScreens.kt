@@ -345,9 +345,9 @@ fun SettingsScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background("#D3D3D3".toColor())
+            .background(Color(0xFFD3D3D3))
             .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceAround
+        verticalArrangement = Arrangement.Top
     ) {
         Text(
             text = "Preferences",
@@ -359,23 +359,24 @@ fun SettingsScreen() {
         SettingItem(icon = Icons.Default.Person, text = "Account")
         SettingItem(icon = Icons.Default.Notifications, text = "Notifications")
         SettingItem(icon = Icons.Default.Email, text = "Help")
+
         Text(
             text = "Information",
             color = Color.Blue,
             modifier = Modifier
                 .align(Alignment.Start)
+                .padding(top = 16.dp)
         )
 
         SettingItem(icon = Icons.Default.Info, text = "About Us")
 
         Button(
-
             onClick = { /* sign out action */ },
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red,contentColor = Color.White),
             modifier = Modifier.fillMaxWidth()
         ) {
             Icon(Icons.Default.ExitToApp, contentDescription = "Sign out")
-            Text("Sign out of Pantry Pal", color = Color.Red)
+            Text("Sign out of Pantry Pal", color = Color.White)
         }
     }
 }
@@ -385,7 +386,7 @@ fun SettingItem(icon: ImageVector, text: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 2.dp),
+            .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -393,7 +394,7 @@ fun SettingItem(icon: ImageVector, text: String) {
             contentDescription = text,
             modifier = Modifier.size(24.dp)
         )
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         Text(text = text)
     }
 }

@@ -10,16 +10,16 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -339,26 +339,64 @@ fun AddScreenPreview() {
     AddScreenPreview()
 }
 
-
+//.background("#D3D3D3".toColor())
 @Composable
 fun SettingsScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background("#e3ffde".toColor())
-            .wrapContentSize(Alignment.Center)
+            .background("#D3D3D3".toColor())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.SpaceAround
     ) {
         Text(
-            text = "Settings View",
-            fontWeight = FontWeight.Bold,
-            color = Color.Black,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            textAlign = TextAlign.Center,
-            fontSize = 25.sp
+            text = "Preferences",
+            color = Color.Blue,
+            modifier = Modifier
+                .align(Alignment.Start)
         )
+
+        SettingItem(icon = Icons.Default.Person, text = "Account")
+        SettingItem(icon = Icons.Default.Notifications, text = "Notifications")
+        SettingItem(icon = Icons.Default.Email, text = "Help")
+        Text(
+            text = "Information",
+            color = Color.Blue,
+            modifier = Modifier
+                .align(Alignment.Start)
+        )
+
+        SettingItem(icon = Icons.Default.Info, text = "About Us")
+
+        Button(
+
+            onClick = { /* sign out action */ },
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(Icons.Default.ExitToApp, contentDescription = "Sign out")
+            Text("Sign out of Pantry Pal", color = Color.Red)
+        }
     }
 }
 
+@Composable
+fun SettingItem(icon: ImageVector, text: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = text,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(text = text)
+    }
+}
 @Preview(showBackground = true)
 @Composable
 fun SettingsScreenPreview() {

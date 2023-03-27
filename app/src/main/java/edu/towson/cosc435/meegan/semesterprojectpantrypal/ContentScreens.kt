@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.delay
+
 //Description:
 // This code snippet defines a ContentScreens class and four Composable functions: HomeScreen,
 // GroceryScreen, AddScreen, and SettingsScreen. Each function represents a unique content screen
@@ -158,15 +160,34 @@ fun GroceryScreenPreview() {
 }
 
 
+//NOTE: go back and add if else clauses for blank inputs
 @Composable
 fun AddScreen(onItemAdded: (String, String, String, String) -> Unit) {
-    val itemName = remember { mutableStateOf(TextFieldValue("")) }
-    val category = remember { mutableStateOf(TextFieldValue("")) }
-    val quantity = remember { mutableStateOf(TextFieldValue("")) }
-    val expirationDate = remember { mutableStateOf(TextFieldValue("")) }
+    val fields = listOf(
+        "Item name" to remember { mutableStateOf(TextFieldValue("")) },
+        "Category" to remember { mutableStateOf(TextFieldValue("")) },
+        "Quantity" to remember { mutableStateOf(TextFieldValue("")) },
+        "Expiration Date (YYYY-MM-DD)" to remember { mutableStateOf(TextFieldValue("")) }
+    )
+    val confirmationMessage = remember { mutableStateOf("") }
+    val showMessage = remember { mutableStateOf(false) }
 
-    // Define a boolean state to track whether a new item was added
-    val newItemAdded = remember { mutableStateOf(false) }
+    @Composable
+    fun InputField(
+        label: String,
+        state: MutableState<TextFieldValue>,
+        modifier: Modifier = Modifier,
+        keyboardOptions: KeyboardOptions = KeyboardOptions.Default)
+    {
+        TextField(
+            value = state.value,
+            onValueChange = { state.value = it },
+            label = { Text(label) },
+            modifier = modifier,
+            keyboardOptions = keyboardOptions)
+
+        Spacer(modifier = Modifier.height(8.dp))
+    }
 
     Column(
         modifier = Modifier
@@ -177,56 +198,51 @@ fun AddScreen(onItemAdded: (String, String, String, String) -> Unit) {
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
-        TextField(value = itemName.value, onValueChange = { itemName.value = it }, label = { Text("Item name") })
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TextField(value = category.value, onValueChange = { category.value = it }, label = { Text("Category") })
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TextField(value = quantity.value, onValueChange = { newValue ->
-            // Restrict input to numbers only
-            if (newValue.text.all { it.isDigit() }) {
-                quantity.value = newValue
-            }
-        }, label = { Text("Quantity") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TextField(value = expirationDate.value, onValueChange = { newValue ->
-            // Restrict input to numbers and dashes only
-            if (newValue.text.all { it.isDigit() || it == '-' }) {
-                expirationDate.value = newValue
-            }
-            //NOTE: Was struggling with making this Date Format for some reason, Ill come back later and fix
-        }, label = { Text("Expiration Date (YYYY-MM-DD)") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
-        Spacer(modifier = Modifier.height(16.dp))
+        fields.forEach { (label, state) ->
+            val keyboardType = if (label == "Quantity" || label == "Expiration Date (YYYY-MM-DD)") KeyboardType.Number else KeyboardType.Text
+            InputField(label, state, keyboardOptions = KeyboardOptions(keyboardType = keyboardType))
+        }
 
         Button(onClick = {
             onItemAdded(
-                itemName.value.text,
-                category.value.text,
-                quantity.value.text,
-                expirationDate.value.text
+                fields[0].second.value.text,
+                fields[1].second.value.text,
+                fields[2].second.value.text,
+                fields[3].second.value.text
             )
 
-            // Set the newItemAdded state to true to trigger a screen refresh
-            newItemAdded.value = true
-
             // Reset the input fields to blank
-            itemName.value = TextFieldValue("")
-            category.value = TextFieldValue("")
-            quantity.value = TextFieldValue("")
-            expirationDate.value = TextFieldValue("")
+            fields.forEach { (_, state) -> state.value = TextFieldValue("") }
+
+            // Update the confirmation message and show it
+            confirmationMessage.value = "Item added to inventory"
+            showMessage.value = true
         }) {
             Text("Confirm")
         }
-
-        //maybe add a box that appears saving item has been added to inventory
+        ConfirmationMessage(
+            message = confirmationMessage.value,
+            showMessage = showMessage.value,
+            onMessageShown = { showMessage.value = false }
+        )
     }
-
 }
 
 
-
+@Composable
+fun ConfirmationMessage(
+    message: String,
+    showMessage: Boolean,
+    onMessageShown: () -> Unit
+) {
+    if (showMessage) {
+        LaunchedEffect(Unit) {
+            delay(3000) // Adjust the duration to your preference
+            onMessageShown()
+        }
+        Text(message, Modifier.padding(top = 8.dp))
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -234,7 +250,11 @@ fun AddScreenPreview() {
     AddScreen(onItemAdded = { itemName, category, quantity, expirationDate ->
         // Do something with the item information
         // In terminal
-        println("$itemName added to inventory")
+        println("Item name: $itemName")
+        println("Category: $category")
+        println("Quantity: $quantity")
+        println("Expiration date: $expirationDate")
+        println("Added to inventory")
     })
 }
 

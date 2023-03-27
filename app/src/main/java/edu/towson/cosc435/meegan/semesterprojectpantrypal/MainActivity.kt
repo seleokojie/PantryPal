@@ -5,6 +5,8 @@ package edu.towson.cosc435.meegan.semesterprojectpantrypal
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 
 /**
@@ -14,20 +16,34 @@ import androidx.compose.ui.graphics.Color
  * using Jetpack Compose's NavController, and each screen can be accessed via bottom navigation items.
  */
 
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            //for login screen not working properly
+//for login screen not working properly
 //            SemesterProjectPantryPalTheme {
 //                    val navController = rememberNavController()
 //                    Navigation(navController = navController)
 //            }
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            val username = remember { mutableStateOf("") }
+            val password = remember { mutableStateOf("") }
+            val loginButtonPressed = remember { mutableStateOf(false) }
 
-            MainScreen()
+            // Create a boolean variable to indicate whether the MainScreen should be displayed
+            val showMainScreen = username.value.isNotEmpty() && password.value.isNotEmpty() && loginButtonPressed.value
+
+            if (showMainScreen) {
+                MainScreen()
+            } else {
+                LoginScreen(
+                    username = username.value,
+                    password = password.value,
+                    onUsernameChange = { username.value = it },
+                    onPasswordChange = { password.value = it },
+                    onLoginButtonClick = { loginButtonPressed.value = true }
+                )
+            }
         }
-
     }
 }
 

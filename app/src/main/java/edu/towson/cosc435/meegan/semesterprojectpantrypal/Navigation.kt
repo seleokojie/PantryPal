@@ -44,9 +44,9 @@ fun Navigation(navController: NavHostController) {
             SettingsScreen()
         }
 
-            composable(NavigationItem.Login.route) {
-                LoginScreen(navController = navController)
-            }
+//            composable(NavigationItem.Login.route) {
+//                LoginScreen(navController = navController)
+//            }
 
         composable(NavigationItem.Main.route) {
             MainScreen()

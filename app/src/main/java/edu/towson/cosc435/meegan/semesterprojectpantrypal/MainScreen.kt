@@ -12,6 +12,8 @@ import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun MainScreen() {
+
+
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route

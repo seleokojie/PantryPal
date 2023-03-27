@@ -7,6 +7,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -50,8 +52,12 @@ fun MainScreen() {
 
     Scaffold(
         topBar = {
+            //topBar will display only for Add screen
             if (currentRoute == NavigationItem.Add.route) {
                 TopBar()
+            }
+            else if (currentRoute == NavigationItem.Home.route){
+                SearchBar(label = "Search", hintText = "Type to search...")
             }
         },
         bottomBar = { BottomNavigationBar(navController) },
@@ -92,6 +98,24 @@ fun TopBar() {
         contentColor = Color.Black,
     )
 }
+
+@Composable
+fun SearchBar(label: String, hintText: String) {
+    TextField(
+        value = "",
+        onValueChange = { },
+        label = { Text(label) },
+        placeholder = { Text(hintText) },
+        modifier = Modifier.fillMaxWidth(),
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search Icon"
+            )
+        }
+    )
+}
+
 
 // Preview function for TopBar
 @Preview(showBackground = true)

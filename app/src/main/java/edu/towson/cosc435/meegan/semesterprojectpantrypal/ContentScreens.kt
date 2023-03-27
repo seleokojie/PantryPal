@@ -160,6 +160,12 @@ fun GroceryScreenPreview() {
 }
 
 
+data class Item(
+    val name: String,
+    val category: String,
+    val quantity: String,
+    val expirationDate: String
+)
 //NOTE: go back and add if else clauses for blank inputs
 @Composable
 fun AddScreen(onItemAdded: (String, String, String, String) -> Unit) {
@@ -211,6 +217,7 @@ fun AddScreen(onItemAdded: (String, String, String, String) -> Unit) {
                 fields[3].second.value.text
             )
 
+
             // Reset the input fields to blank
             fields.forEach { (_, state) -> state.value = TextFieldValue("") }
 
@@ -248,13 +255,6 @@ fun ConfirmationMessage(
 @Composable
 fun AddScreenPreview() {
     AddScreen(onItemAdded = { itemName, category, quantity, expirationDate ->
-        // Do something with the item information
-        // In terminal
-        println("Item name: $itemName")
-        println("Category: $category")
-        println("Quantity: $quantity")
-        println("Expiration date: $expirationDate")
-        println("Added to inventory")
     })
 }
 

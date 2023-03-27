@@ -160,7 +160,9 @@ fun Navigation(navController: NavHostController) {
         composable(NavigationItem.Add.route) {
             AddScreen(onItemAdded = { itemName, category, quantity, expirationDate ->
                 // Do something with the item information
-                println("$itemName added to inventory")
+                println("Item name: $itemName, " +
+                        "Category: $category, " +
+                        "Quantity: $quantity, Expiration date: $expirationDate ADDED TO INVENTORY")
             })
         }
 

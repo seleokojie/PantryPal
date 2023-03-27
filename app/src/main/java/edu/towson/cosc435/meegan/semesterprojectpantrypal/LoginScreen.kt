@@ -1,9 +1,9 @@
 package edu.towson.cosc435.meegan.semesterprojectpantrypal
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,39 +64,72 @@ fun LoginScreen(
     password: String,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onLoginButtonClick: () -> Unit
+    onLoginButtonClick: () -> Unit,
+    onSignUpClick: () -> Unit
 ) {
-    Column(
+    Box(
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        contentAlignment = Alignment.Center
     ) {
-        // Create text fields for username and password
-        OutlinedTextField(
-            value = username,
-            onValueChange = onUsernameChange,
-            label = { Text("Username") },
+        Card(
             modifier = Modifier
                 .padding(16.dp)
-                .fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = password,
-            onValueChange = onPasswordChange,
-            label = { Text("Password") },
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        )
-
-        // Create button to log in
-        Button(
-            onClick = onLoginButtonClick,
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
+                .widthIn(min = 300.dp)
+                .heightIn(min = 400.dp),
+            shape = RoundedCornerShape(16.dp),
+            elevation = 8.dp
         ) {
-            Text("Login")
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Log in",
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier.padding(16.dp)
+                )
+
+                // Create text fields for username and password
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = onUsernameChange,
+                    label = { Text("Username") },
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = onPasswordChange,
+                    label = { Text("Password") },
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                )
+
+                // Create button to log in
+                Button(
+                    onClick = onLoginButtonClick,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text("Log in")
+                }
+
+                //Doesnt do anything atm
+                // Create clickable "Sign up" text
+                Text(
+                    text = "Don't have an account? Sign up",
+                    style = MaterialTheme.typography.body2,
+                    color = MaterialTheme.colors.primary,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable(onClick = onSignUpClick)
+                )
+            }
         }
     }
 }
+

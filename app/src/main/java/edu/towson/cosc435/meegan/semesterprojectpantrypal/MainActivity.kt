@@ -30,7 +30,8 @@ class MainActivity : ComponentActivity() {
             val loginButtonPressed = remember { mutableStateOf(false) }
 
             // Create a boolean variable to indicate whether the MainScreen should be displayed
-            val showMainScreen = username.value.isNotEmpty() && password.value.isNotEmpty() && loginButtonPressed.value
+            val showMainScreen =
+                username.value.isNotEmpty() && password.value.isNotEmpty() && loginButtonPressed.value
 
             if (showMainScreen) {
                 MainScreen()
@@ -40,7 +41,8 @@ class MainActivity : ComponentActivity() {
                     password = password.value,
                     onUsernameChange = { username.value = it },
                     onPasswordChange = { password.value = it },
-                    onLoginButtonClick = { loginButtonPressed.value = true }
+                    onLoginButtonClick = { loginButtonPressed.value = true },
+                    onSignUpClick = { /* handle sign up flow */ }
                 )
             }
         }

@@ -40,22 +40,17 @@ import kotlinx.coroutines.delay
 //}
 @Composable
 fun HomeScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background("#e3ffde".toColor())
-            .wrapContentSize(Alignment.Center)
-    ) {
-        Text(
-            text = "Home View",
-            fontWeight = FontWeight.Bold,
-            color = Color.Black,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            textAlign = TextAlign.Center,
-            fontSize = 25.sp
-        )
+    val items = remember { AppState.items }
+
+    LazyColumn {
+        items.forEach { item ->
+            item {
+                Text("${item.name} (${item.category}) - ${item.quantity} - ${item.expirationDate}")
+            }
+        }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
@@ -160,41 +155,45 @@ fun GroceryScreenPreview() {
 }
 
 
-data class Item(
-    val name: String,
-    val category: String,
-    val quantity: String,
-    val expirationDate: String
-)
 //NOTE: go back and add if else clauses for blank inputs
+// Define a composable function that allows users to add items to an inventory list
 @Composable
-fun AddScreen(onItemAdded: (String, String, String, String) -> Unit) {
+fun AddScreen() {
+    // Initialize a mutable list of items from the App State
+    val items = remember { AppState.items.toMutableList() }
+
+    // Initialize a list of fields that users can fill in to add a new item
     val fields = listOf(
         "Item name" to remember { mutableStateOf(TextFieldValue("")) },
         "Category" to remember { mutableStateOf(TextFieldValue("")) },
         "Quantity" to remember { mutableStateOf(TextFieldValue("")) },
         "Expiration Date (YYYY-MM-DD)" to remember { mutableStateOf(TextFieldValue("")) }
     )
+
+    // Initialize mutable state variables for the confirmation message and whether to show it
     val confirmationMessage = remember { mutableStateOf("") }
     val showMessage = remember { mutableStateOf(false) }
 
+    // Define a composable function for the input fields
     @Composable
     fun InputField(
         label: String,
         state: MutableState<TextFieldValue>,
         modifier: Modifier = Modifier,
-        keyboardOptions: KeyboardOptions = KeyboardOptions.Default)
-    {
+        keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    ) {
         TextField(
             value = state.value,
             onValueChange = { state.value = it },
             label = { Text(label) },
             modifier = modifier,
-            keyboardOptions = keyboardOptions)
+            keyboardOptions = keyboardOptions
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
     }
 
+    // Define the layout for the add screen
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -204,19 +203,26 @@ fun AddScreen(onItemAdded: (String, String, String, String) -> Unit) {
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Display the input fields
         fields.forEach { (label, state) ->
-            val keyboardType = if (label == "Quantity" || label == "Expiration Date (YYYY-MM-DD)") KeyboardType.Number else KeyboardType.Text
+            val keyboardType =
+                if (label == "Quantity" || label == "Expiration Date (YYYY-MM-DD)") KeyboardType.Number else KeyboardType.Text
             InputField(label, state, keyboardOptions = KeyboardOptions(keyboardType = keyboardType))
         }
 
+        // Display a button to confirm the item and add it to the list
         Button(onClick = {
-            onItemAdded(
+            // Create a new item from the input fields and add it to the list of items
+            val newItem = Item(
                 fields[0].second.value.text,
                 fields[1].second.value.text,
                 fields[2].second.value.text,
                 fields[3].second.value.text
             )
+            items.add(newItem)
 
+            // Update the App State with the new list of items
+            AppState.items = items.toList()
 
             // Reset the input fields to blank
             fields.forEach { (_, state) -> state.value = TextFieldValue("") }
@@ -227,6 +233,20 @@ fun AddScreen(onItemAdded: (String, String, String, String) -> Unit) {
         }) {
             Text("Confirm")
         }
+
+
+        // Display the list of items in a LazyColumn
+        Spacer(modifier = Modifier.height(16.dp))
+        LazyColumn {
+            items.forEach { item ->
+                item {
+                    Text("${item.name} (${item.category}) - ${item.quantity} - ${item.expirationDate}")
+                }
+            }
+        }
+
+        // Display a confirmation message if an item was successfully added
+        Spacer(modifier = Modifier.height(16.dp))
         ConfirmationMessage(
             message = confirmationMessage.value,
             showMessage = showMessage.value,
@@ -234,6 +254,15 @@ fun AddScreen(onItemAdded: (String, String, String, String) -> Unit) {
         )
     }
 }
+
+
+data class Item(
+    val name: String,
+    val category: String,
+    val quantity: String,
+    val expirationDate: String
+)
+
 
 
 @Composable
@@ -254,8 +283,7 @@ fun ConfirmationMessage(
 @Preview(showBackground = true)
 @Composable
 fun AddScreenPreview() {
-    AddScreen(onItemAdded = { itemName, category, quantity, expirationDate ->
-    })
+    AddScreenPreview()
 }
 
 

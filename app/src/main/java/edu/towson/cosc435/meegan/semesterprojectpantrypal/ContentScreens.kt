@@ -165,6 +165,9 @@ fun AddScreen(onItemAdded: (String, String, String, String) -> Unit) {
     val quantity = remember { mutableStateOf(TextFieldValue("")) }
     val expirationDate = remember { mutableStateOf(TextFieldValue("")) }
 
+    // Define a boolean state to track whether a new item was added
+    val newItemAdded = remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -204,12 +207,24 @@ fun AddScreen(onItemAdded: (String, String, String, String) -> Unit) {
                 quantity.value.text,
                 expirationDate.value.text
             )
+
+            // Set the newItemAdded state to true to trigger a screen refresh
+            newItemAdded.value = true
+
+            // Reset the input fields to blank
+            itemName.value = TextFieldValue("")
+            category.value = TextFieldValue("")
+            quantity.value = TextFieldValue("")
+            expirationDate.value = TextFieldValue("")
         }) {
             Text("Confirm")
         }
+
+        //maybe add a box that appears saving item has been added to inventory
     }
 
 }
+
 
 
 

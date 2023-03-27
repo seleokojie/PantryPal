@@ -1,7 +1,10 @@
 package edu.towson.cosc435.meegan.semesterprojectpantrypal
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
@@ -18,9 +21,6 @@ sealed class NavigationItem(var route: String, var icon: ImageVector?, var title
     object Grocery : NavigationItem("grocery", Icons.Filled.ShoppingCart, "Grocery")
     object Add : NavigationItem("add", Icons.Filled.Add, "Add")
     object Settings : NavigationItem("settings", Icons.Filled.Settings, "Settings")
-
-    object Login : NavigationItem("login", Icons.Filled.AccountCircle, "Login")
-    object Main : NavigationItem("main", Icons.Filled.Home, "Main")
 
 
 }
@@ -48,10 +48,7 @@ fun Navigation(navController: NavHostController) {
 //                LoginScreen(navController = navController)
 //            }
 
-        composable(NavigationItem.Main.route) {
-            MainScreen()
-        }
-        }
+    }
 
 
     }

@@ -41,18 +41,48 @@ import kotlinx.coroutines.delay
 @Composable
 fun HomeScreen() {
     val items = remember { AppState.items }
-
+    Column(
+        modifier = Modifier
+        .fillMaxSize()
+        .background("#e3ffde".toColor())
+        .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
     LazyColumn {
         items.forEach { item ->
             item {
-                Text(
-                    "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}",
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-                Spacer(modifier = Modifier.height(4.dp))
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                    .background(Color.White)
+                ) {
+                    Text(
+                        text = "Category: ${item.category}",
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    Text(
+                        text = "Name: ${item.name}",
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    Text(
+                        text = "Quantity: ${item.quantity}",
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    Text(
+                        text = "EXP: ${item.expirationDate}",
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+            }
             }
         }
     }
+
 }
 
 
@@ -163,6 +193,7 @@ fun GroceryScreenPreview() {
 // Define a composable function that allows users to add items to an inventory list
 @Composable
 fun AddScreen() {
+
     // Initialize a mutable list of items from the App State
     val items = remember { AppState.items.toMutableList() }
 
@@ -210,7 +241,7 @@ fun AddScreen() {
         // Display the input fields
         fields.forEach { (label, state) ->
             val keyboardType =
-                if (label == "Quantity" || label == "Expiration Date (YYYY-MM-DD)") KeyboardType.Number else KeyboardType.Text
+                if (label == "Quantity" || label == "Expiration Date (MM-DD-YYYY)") KeyboardType.Number else KeyboardType.Text
             InputField(label, state, keyboardOptions = KeyboardOptions(keyboardType = keyboardType))
         }
 
@@ -256,7 +287,11 @@ fun AddScreen() {
                 item {
                     Text(
                         "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}",
-                        modifier = Modifier.padding(vertical = 8.dp)
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .fillMaxWidth()
+                            .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                            .padding(8.dp)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                 }

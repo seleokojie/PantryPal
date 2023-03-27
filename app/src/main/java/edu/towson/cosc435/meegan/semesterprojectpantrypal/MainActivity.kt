@@ -5,9 +5,7 @@ package edu.towson.cosc435.meegan.semesterprojectpantrypal
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * This file defines the main structure and navigation of the application. It includes the
@@ -29,11 +27,7 @@ class MainActivity : ComponentActivity() {
 // Extension function to convert a HEX color string to a Jetpack Compose Color
 fun String.toColor() = Color(android.graphics.Color.parseColor(this))
 
-// Preview function for MainScreen
-@Preview(showBackground = true)
-@Composable
-fun MainScreenPreview() {
-    MainScreen()
-}
+
+
 
 

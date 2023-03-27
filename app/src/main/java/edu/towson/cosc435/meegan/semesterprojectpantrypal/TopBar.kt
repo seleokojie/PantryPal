@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 
+// TopBar Composable function that displays a centered title "Add New Item", only shows on Add route
 @Composable
 fun TopBar() {
     TopAppBar(

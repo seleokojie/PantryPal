@@ -19,8 +19,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            //for login screen not working properly
+//            SemesterProjectPantryPalTheme {
+//                    val navController = rememberNavController()
+//                    Navigation(navController = navController)
+//            }
+
             MainScreen()
         }
+
     }
 }
 

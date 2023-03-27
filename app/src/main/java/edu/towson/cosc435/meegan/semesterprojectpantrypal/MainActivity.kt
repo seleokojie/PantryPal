@@ -161,7 +161,6 @@ fun Navigation(navController: NavHostController) {
             AddScreen(
             )
         }
-
         composable(NavigationItem.Settings.route) {
            SettingsScreen()
         }

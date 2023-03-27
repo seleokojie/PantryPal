@@ -45,7 +45,11 @@ fun HomeScreen() {
     LazyColumn {
         items.forEach { item ->
             item {
-                Text("${item.name} (${item.category}) - ${item.quantity} - ${item.expirationDate}")
+                Text(
+                    "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}",
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
             }
         }
     }
@@ -234,13 +238,27 @@ fun AddScreen() {
             Text("Confirm")
         }
 
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            if (items.isNotEmpty()) {
+                Text(
+                    text = "Current Inventory",
+                    style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
+
 
         // Display the list of items in a LazyColumn
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         LazyColumn {
             items.forEach { item ->
                 item {
-                    Text("${item.name} (${item.category}) - ${item.quantity} - ${item.expirationDate}")
+                    Text(
+                        "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}",
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
             }
         }

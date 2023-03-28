@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     onUsernameChange = { username.value = it },
                     onPasswordChange = { password.value = it },
                     onLoginButtonClick = { loginButtonPressed.value = true },
-                    onSignUpClick = { /* handle sign up flow */ }
+                    onSignUpClick = { /* handle sign up f low */ }
                 )
             }
         }

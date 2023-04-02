@@ -1,3 +1,5 @@
+// no need to make async at moment but may in the future when interacting with database
+
 package edu.towson.cosc435.meegan.semesterprojectpantrypal
 
 import androidx.compose.foundation.clickable

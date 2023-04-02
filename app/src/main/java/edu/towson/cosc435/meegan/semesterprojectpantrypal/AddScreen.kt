@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,10 +16,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
 @Composable
 fun AddScreen() {
+
 
     // Initialize a mutable list of items from the App State
     val items = remember { AppState.items.toMutableList() }
@@ -60,14 +59,27 @@ fun AddScreen() {
 
     // Define the layout for the add screen
     Column(
+
         modifier = Modifier
             .fillMaxSize()
             .background("#e3ffde".toColor())
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
+//        Spacer(modifier = Modifier.height(16.dp))
 
+        Button(
+            onClick = {
+                // Handle barcode scanner functionality here
+            },
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .fillMaxWidth(0.80f),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
+        ) {
+            Text("Barcode Scanner", color = Color.Black, fontSize = 19.sp)
+        }
+        Spacer(modifier = Modifier.height(16.dp))
         // Display the input fields
         fields.forEach { (label, state) ->
             val keyboardType =
@@ -115,18 +127,23 @@ fun AddScreen() {
         LazyColumn {
             items.forEach { item ->
                 item {
-                    Text(
-                        "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}",
+                    Box(
                         modifier = Modifier
-                            .padding(vertical = 8.dp)
                             .fillMaxWidth()
                             .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                            .background(Color.White)
                             .padding(8.dp)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    ) {
+                        Text(
+                            "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}",
+                            modifier = Modifier.padding(10.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
+
 
         // Display a confirmation message if an item was successfully added
         Spacer(modifier = Modifier.height(16.dp))

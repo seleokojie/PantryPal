@@ -40,6 +40,7 @@ fun AddScreen() {
     val categoryState = remember { mutableStateOf(TextFieldValue("")) }
     val quantityState = remember { mutableStateOf(TextFieldValue("")) }
     val expirationDateState = remember { mutableStateOf(TextFieldValue("")) }
+    val errorState = remember { mutableStateOf(false) }
 
     //Choosing of Date
     val datePicker = DatePickerDialog(
@@ -121,6 +122,13 @@ fun AddScreen() {
             }
         )
         Button(onClick = {
+            if (itemNameState.value.text.isBlank() || categoryState.value.text.isBlank() || quantityState.value.text.isBlank() || expirationDateState.value.text.isBlank()) {
+                errorState.value = true
+                return@Button
+            } else {
+                errorState.value = false
+            }
+
             val newItem = Item(
                 itemNameState.value.text,
                 categoryState.value.text,
@@ -137,7 +145,18 @@ fun AddScreen() {
             categoryState.value = TextFieldValue("")
             quantityState.value = TextFieldValue("")
             expirationDateState.value = TextFieldValue("")
-        }) { Text("Confirm") }
+        }){
+            Text("Confirm")
+        }
+
+        if (errorState.value) {
+            Text("Please fill out all fields",
+                color = Color.Red,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+
+            )
+        }
 
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             if (items.isNotEmpty()) {

@@ -76,7 +76,7 @@ fun AddScreen() {
                 value = state.value,
                 onValueChange = { newValue ->
                     if (onlyNum && newValue.text.any { !it.isDigit() }) return@TextField
-                    if (onlyLet && newValue.text.any { !it.isLetterOrDigit() && it != ' ' }) return@TextField
+                    if (onlyLet && newValue.text.any { !it.isLetter() && it != ' ' }) return@TextField
                     state.value = newValue
                 },
                 label = { Text(label) },

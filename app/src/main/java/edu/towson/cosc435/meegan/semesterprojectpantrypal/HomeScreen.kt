@@ -1,8 +1,10 @@
 package edu.towson.cosc435.meegan.semesterprojectpantrypal
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -26,33 +28,22 @@ fun HomeScreen() {
         LazyColumn {
             items.forEach { item ->
                 item {
-                    Column(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .background(Color.White)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                            .background(Color.White)
+                            .padding(8.dp)
+
                     ) {
                         Text(
-                            text = "Category: ${item.category}",
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-                        Text(
-                            text = "Name: ${item.name}",
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-                        Text(
-                            text = "Quantity: ${item.quantity}",
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-                        Text(
-                            text = "EXP: ${item.expirationDate}",
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(bottom = 4.dp)
+                            "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}",
+                           fontSize = 16.sp,
+                            modifier = Modifier
+                                .padding(10.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }

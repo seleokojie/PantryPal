@@ -1,6 +1,0 @@
-4/2:
-Having skipping frames error, but apparently if its less than 100 its not that big of a
-deal, I reviewed my code and most of it is static and no calls are be made or being blocked atm.
-Apparently sometimes the emulator will just be slow.
-
-Error: I/Choreographer: Skipped 47 frames!  The application may be doing too much work on its main thread.

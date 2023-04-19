@@ -1,0 +1,30 @@
+4/2:
+Having skipping frames error, but apparently if its less than 100 its not that big of a
+deal, I reviewed my code and most of it is static and no calls are be made or being blocked atm.
+Apparently sometimes the emulator will just be slow.
+
+Error: I/Choreographer: Skipped 47 frames!  The application may be doing too much work on its main thread.
+
+
+User requirements listed
+
+As a User, I want to be notified when a food item is close to expiring.
+
+As a User, I want to be able to add, update, and delete any food items in my current inventory.  (1) DONE
+
+As a User, I want to be able to filter my food inventory based on whether items are perishable or non-perishable.
+
+As a User, I want to be able to quickly search up certain foods by typing in the name of the item.
+
+As a User, I want my food inventory to be properly stored in the app and always be there when the app loads.
+
+As a User, I want to be able to access my account across multiple devices.
+
+As a User, I want to be able to create an account so that I can save my food inventory.
+
+As a User, I want to be able to use the app as a grocery list and a note-taker, so that I can easily
+ add items to my shopping list or make notes about my food inventory. (2) DONE
+
+As a User, I want to be able to scan barcodes to fill in information when adding a new item.
+
+As a User, I want to be able to access a settings page to change how I view my app.

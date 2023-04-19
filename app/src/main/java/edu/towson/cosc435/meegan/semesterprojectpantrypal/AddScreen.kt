@@ -58,90 +58,6 @@ fun AddScreen() {
     val confirmationMessage = remember { mutableStateOf("") }
     val showMessage = remember { mutableStateOf(false) }
 
-    @Composable
-    fun InputField(
-        label: String,
-        state: MutableState<TextFieldValue>,
-        modifier: Modifier = Modifier,
-        keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-        onlyNum: Boolean = false,
-        onlyLet: Boolean = false,
-        categories: List<String> = emptyList(),
-        onClick: (() -> Unit)? = null
-    ) {
-        var selectedIndex by remember { mutableStateOf(-1) }
-
-        Column(modifier) {
-            if (categories.isNotEmpty()) {
-                var expanded by remember { mutableStateOf(false) }
-
-                Box(Modifier.clickable(onClick = { expanded = true })) {
-                    TextField(
-                        value = if (selectedIndex >= 0) state.value else TextFieldValue(""),
-                        onValueChange = { newValue ->
-                            if (onlyNum && newValue.text.any { !it.isDigit() }) return@TextField
-                            if (onlyLet && newValue.text.any { !it.isLetter() && it != ' ' }) return@TextField
-                            state.value = newValue
-                        },
-                        label = { Text(label) },
-                        modifier = Modifier.fillMaxWidth(0.7f),
-                        keyboardOptions = keyboardOptions,
-                        enabled = false
-                    )
-                }
-
-                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    categories.forEachIndexed { index, category ->
-                        DropdownMenuItem(onClick = {
-                            selectedIndex = index
-                            state.value = TextFieldValue(category)
-                            expanded = false
-                        }) {
-                            Text(text = category)
-                        }
-                    }
-                }
-            } else {
-                if (onClick != null) {
-                    Box(Modifier.clickable(onClick = onClick).fillMaxWidth(0.7f)) {
-                        TextField(
-                            value = state.value,
-                            onValueChange = { newValue ->
-                                if (onlyNum && newValue.text.any { !it.isDigit() }) return@TextField
-                                if (onlyLet && newValue.text.any { !it.isLetter() && it != ' ' }) return@TextField
-                                state.value = newValue
-                            },
-                            label = { Text(label) },
-                            modifier = Modifier.fillMaxWidth(),
-                            keyboardOptions = keyboardOptions,
-                            enabled = false
-                        )
-                    }
-                } else {
-                    TextField(
-                        value = state.value,
-                        onValueChange = { newValue ->
-                            if (onlyNum && newValue.text.any { !it.isDigit() }) return@TextField
-                            if (onlyLet && newValue.text.any { !it.isLetter() && it != ' ' }) return@TextField
-                            state.value = newValue
-                        },
-                        label = { Text(label) },
-                        modifier = Modifier.fillMaxWidth(0.7f),
-                        keyboardOptions = keyboardOptions
-                    )
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-    }
-
-
-
-
-
-
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -251,6 +167,83 @@ fun AddScreen() {
     }
 }
 
+@Composable
+fun InputField(
+    label: String,
+    state: MutableState<TextFieldValue>,
+    modifier: Modifier = Modifier,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    onlyNum: Boolean = false,
+    onlyLet: Boolean = false,
+    categories: List<String> = emptyList(),
+    onClick: (() -> Unit)? = null
+)
+{
+    var selectedIndex by remember { mutableStateOf(-1) }
+
+    Column(modifier) {
+        if (categories.isNotEmpty()) {
+            var expanded by remember { mutableStateOf(false) }
+
+            Box(Modifier.clickable(onClick = { expanded = true })) {
+                TextField(
+                    value = if (selectedIndex >= 0) state.value else TextFieldValue(""),
+                    onValueChange = { newValue ->
+                        if (onlyNum && newValue.text.any { !it.isDigit() }) return@TextField
+                        if (onlyLet && newValue.text.any { !it.isLetter() && it != ' ' }) return@TextField
+                        state.value = newValue
+                    },
+                    label = { Text(label) },
+                    modifier = Modifier.fillMaxWidth(0.7f),
+                    keyboardOptions = keyboardOptions,
+                    enabled = false
+                )
+            }
+
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                categories.forEachIndexed { index, category ->
+                    DropdownMenuItem(onClick = {
+                        selectedIndex = index
+                        state.value = TextFieldValue(category)
+                        expanded = false
+                    }) {
+                        Text(text = category)
+                    }
+                }
+            }
+        } else {
+            if (onClick != null) {
+                Box(Modifier.clickable(onClick = onClick).fillMaxWidth(0.7f)) {
+                    TextField(
+                        value = state.value,
+                        onValueChange = { newValue ->
+                            if (onlyNum && newValue.text.any { !it.isDigit() }) return@TextField
+                            if (onlyLet && newValue.text.any { !it.isLetter() && it != ' ' }) return@TextField
+                            state.value = newValue
+                        },
+                        label = { Text(label) },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = keyboardOptions,
+                        enabled = false
+                    )
+                }
+            } else {
+                TextField(
+                    value = state.value,
+                    onValueChange = { newValue ->
+                        if (onlyNum && newValue.text.any { !it.isDigit() }) return@TextField
+                        if (onlyLet && newValue.text.any { !it.isLetter() && it != ' ' }) return@TextField
+                        state.value = newValue
+                    },
+                    label = { Text(label) },
+                    modifier = Modifier.fillMaxWidth(0.7f),
+                    keyboardOptions = keyboardOptions
+                )
+            }
+        }
+    }
+    Spacer(modifier = Modifier.height(8.dp))
+}
 
 data class Item(
     val name: String,

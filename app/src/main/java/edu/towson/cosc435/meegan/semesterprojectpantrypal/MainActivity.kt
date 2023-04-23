@@ -5,6 +5,7 @@ package edu.towson.cosc435.meegan.semesterprojectpantrypal
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
@@ -37,10 +38,15 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 // Extension function to convert a HEX color string to a Jetpack Compose Color
 fun String.toColor() = Color(android.graphics.Color.parseColor(this))
 
-
+@Composable
+fun MainScreen(onSignOutClick: () -> Unit) {
+    // Pass the onSignOutClick callback to the SettingsScreen composable
+    SettingsScreen()
+}
 
 
 

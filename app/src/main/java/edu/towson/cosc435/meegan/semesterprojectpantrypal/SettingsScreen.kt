@@ -1,7 +1,9 @@
 
 package edu.towson.cosc435.meegan.semesterprojectpantrypal
 
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -21,6 +23,9 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun SettingsScreen() {
+    val showHelpDialog = remember { mutableStateOf(false) }
+    val showAccountDropdown = remember { mutableStateOf(false) }
+    val showNotificationDropDown = remember { mutableStateOf(false) }// Add this line
     val logoutButtonPressed = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
@@ -37,11 +42,44 @@ fun SettingsScreen() {
                 .align(Alignment.Start)
         )
 
-        SettingItem(icon = Icons.Default.Person, text = "Account")
+        SettingItem(
+            icon = Icons.Default.Person,
+            text = "Account",
+            onExpandedChange = { showAccountDropdown.value = !showAccountDropdown.value }
+        )
+        if (showAccountDropdown.value) {
+            ExpandableSettingList()
+        }
         Divider() // Add a line separating settings
-        SettingItem(icon = Icons.Default.Notifications, text = "Notifications")
+        SettingItem(
+            icon = Icons.Default.Notifications,
+            text = "Notifications",
+            onExpandedChange = {showNotificationDropDown.value = !showNotificationDropDown.value}
+        )
+        if (showNotificationDropDown.value) {
+            ExpandableNotificationsList()
+        }
         Divider() // Add a line separating settings
-        SettingItem(icon = Icons.Default.Email, text = "Help")
+        SettingItem(
+            icon = Icons.Default.Email,
+            text = "Help",
+            onClick = {
+                Log.d("help icon", "clicked")
+                showHelpDialog.value = true }
+        )
+        if (showHelpDialog.value) {
+            AlertDialog(
+                onDismissRequest = { showHelpDialog.value = false },
+                title = { Text("Help") },
+                text = { Text("Contact support at supportpantrypal.com") },
+                confirmButton = {
+                    Button(onClick = { showHelpDialog.value = false } )
+                    {
+                        Text("Ok")
+                    }
+                }
+            )
+        }
         Divider() // Add a line separating settings
         Text(
             text = "Information",
@@ -67,11 +105,12 @@ fun SettingsScreen() {
 }
 
 @Composable
-fun SettingItem(icon: ImageVector, text: String) {
+fun SettingItem(icon: ImageVector, text: String, onClick: () -> Unit = {}, onExpandedChange: () -> Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp),
+            .padding(vertical = 16.dp)
+            .clickable { onClick(); onExpandedChange() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -81,6 +120,22 @@ fun SettingItem(icon: ImageVector, text: String) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = text, fontSize = 18.sp) // Make the text bigger
+    }
+}
+
+@Composable
+fun ExpandableSettingList() {
+    Column {
+        SettingItem(icon = Icons.Default.AccountBox, text = "Profile")
+        SettingItem(icon = Icons.Default.Lock, text = "Security")
+        SettingItem(icon = Icons.Default.Settings, text = "Settings")
+    }
+}
+
+@Composable
+fun ExpandableNotificationsList() {
+    Column {
+        SettingItem(icon = Icons.Default.AccountBox, text = "Show Alerts")
     }
 }
 

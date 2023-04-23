@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,15 +19,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun SettingsScreen() {
     val showHelpDialog = remember { mutableStateOf(false) }
     val showAccountDropdown = remember { mutableStateOf(false) }
-    val showNotificationDropDown = remember { mutableStateOf(false) }// Add this line
+    val showNotificationDropDown = remember { mutableStateOf(false) }
+    val showAboutUsDropdown = remember { mutableStateOf(false)}
     val logoutButtonPressed = remember { mutableStateOf(false) }
+    val vm = UserState.current
+    val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -90,11 +94,21 @@ fun SettingsScreen() {
                 .padding(top = 16.dp)
         )
 
-        SettingItem(icon = Icons.Default.Info, text = "About Us")
+        SettingItem(
+            icon = Icons.Default.Info,
+            text = "About Us",
+            onExpandedChange = {showAboutUsDropdown.value = !showAboutUsDropdown.value}
+        )
+        if (showAboutUsDropdown.value) {
+            ExpandableAboutUs()
+        }
         Divider() // Add a line separating settings
 
         Button(
-            onClick = { /* sign out action */ },
+            onClick = {
+                coroutineScope.launch {
+                    vm.signOut()
+                }},
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red, contentColor = Color.White),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -125,17 +139,31 @@ fun SettingItem(icon: ImageVector, text: String, onClick: () -> Unit = {}, onExp
 
 @Composable
 fun ExpandableSettingList() {
-    Column {
+    Column (modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)){
         SettingItem(icon = Icons.Default.AccountBox, text = "Profile")
         SettingItem(icon = Icons.Default.Lock, text = "Security")
-        SettingItem(icon = Icons.Default.Settings, text = "Settings")
     }
 }
 
 @Composable
 fun ExpandableNotificationsList() {
-    Column {
+    Column (modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)){
         SettingItem(icon = Icons.Default.AccountBox, text = "Show Alerts")
+    }
+}
+
+@Composable
+fun ExpandableAboutUs() {
+    Column(
+        modifier =
+        Modifier
+            .background(Color.White)
+            .padding(16.dp)
+    )  {
+        Text(
+            text = "Pantry Pal helps users manage their food inventory and reduce food waste by notifying them when items are close to expiration. The app allows users to easily add, update, and delete items, filter their inventory by perishable or non-perishable items, and search for specific items by name. Users can also use the app as a grocery list and note-taker, and scan barcodes to quickly fill in item information.",
+            fontSize = 16.sp
+        )
     }
 }
 

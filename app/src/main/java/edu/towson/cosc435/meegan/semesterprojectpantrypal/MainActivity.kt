@@ -5,34 +5,17 @@ package edu.towson.cosc435.meegan.semesterprojectpantrypal
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.activity.viewModels
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 
 class MainActivity : ComponentActivity() {
+    private val userState by viewModels<UserStateViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val username = remember { mutableStateOf("") }
-            val password = remember { mutableStateOf("") }
-            val loginButtonPressed = remember { mutableStateOf(false) }
-
-            // Create a boolean variable to indicate whether the MainScreen should be displayed
-            val showMainScreen =
-                username.value.isNotEmpty() && password.value.isNotEmpty() && loginButtonPressed.value
-
-            if (showMainScreen) {
-                MainScreen()
-            } else {
-                LoginScreen(
-                    username = username.value,
-                    password = password.value,
-                    onUsernameChange = { username.value = it },
-                    onPasswordChange = { password.value = it },
-                    onLoginButtonClick = { loginButtonPressed.value = true },
-                    onSignUpClick = { /* handle sign up f low */ }
-                )
+            CompositionLocalProvider(UserState provides userState ) {
+                ApplicationSwitcher()
             }
         }
     }
@@ -42,11 +25,7 @@ class MainActivity : ComponentActivity() {
 // Extension function to convert a HEX color string to a Jetpack Compose Color
 fun String.toColor() = Color(android.graphics.Color.parseColor(this))
 
-@Composable
-fun MainScreen(onSignOutClick: () -> Unit) {
-    // Pass the onSignOutClick callback to the SettingsScreen composable
-    SettingsScreen()
-}
+
 
 
 

@@ -97,6 +97,7 @@ fun AddScreen() {
             }
 
             val newItem = Item(
+                AppState.loggedInUserId,
                 itemNameState.value.text,
                 categoryState.value.text,
                 quantityState.value.text,
@@ -246,6 +247,7 @@ fun InputField(
 }
 
 data class Item(
+    val userId: Int,
     val name: String,
     val category: String,
     val quantity: String,

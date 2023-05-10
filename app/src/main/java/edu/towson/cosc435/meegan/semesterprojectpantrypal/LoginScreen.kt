@@ -1,5 +1,7 @@
 package edu.towson.cosc435.meegan.semesterprojectpantrypal
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
@@ -9,6 +11,7 @@ import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -19,11 +22,13 @@ import kotlinx.coroutines.launch
 // no need to make async at moment but may in the future when interacting with database
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(context: Context) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     val vm = UserState.current
+    val dbHelper = MyDatabaseHelper(context)
+
     Column(
         Modifier
             .fillMaxSize()
@@ -31,7 +36,6 @@ fun LoginScreen() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
 
         if (vm.isBusy) {
             CircularProgressIndicator()
@@ -63,15 +67,28 @@ fun LoginScreen() {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
+
                 onClick = {
-                    coroutineScope.launch {
-                        vm.signIn(email, password)
+                    println("\n\n\n$email")
+                    println("$password\n\n\n")
+                    val authenticated = dbHelper.authenticateUser(email, password)
+                    if (authenticated) {
+                        coroutineScope.launch {
+                            vm.signIn(email, password)
+                        }
+                    } else {
+                        Toast.makeText(context, "Incorrect login details", Toast.LENGTH_SHORT).show()
                     }
-                }) {
+                }
+            ) {
                 Text("Login")
             }
         }
-
-
     }
+}
+
+@Composable
+fun LoginScreenWrapper() {
+    val context = LocalContext.current
+    LoginScreen(context)
 }

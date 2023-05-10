@@ -1,9 +1,5 @@
 package edu.towson.cosc435.meegan.semesterprojectpantrypal
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-
 
 // AppState is an object used for centralized state management in the program.
 // Specifically, it provides a way to store and access a list of Item objects
@@ -17,5 +13,7 @@ import androidx.compose.runtime.setValue
 
 
 object AppState {
-    var items by mutableStateOf(emptyList<Item>())
-}
+        var items: List<Item> = listOf()
+        var loggedInUserId: Int = -1
+    }
+

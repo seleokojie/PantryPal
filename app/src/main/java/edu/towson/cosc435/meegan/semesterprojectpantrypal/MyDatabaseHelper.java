@@ -8,8 +8,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
@@ -103,12 +105,11 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             values.put(COL_PASSWORD, passwords[i]);
             db.insert(TABLE_USERS, null, values);
         }
+
     }
 
 
     public boolean authenticateUser(String email, String password) {
-        System.out.println("\n\nFROM AUTHENTICATE EMAIL VALUE:" + email);
-        System.out.println("FROM AUTHENTICATE PASSWORD VALUE:" + password + "\n\n");
         SQLiteDatabase db = this.getReadableDatabase();
         String[] columns = {COL_ID};
         String selection = COL_USERNAME + " = ? AND " + COL_PASSWORD + " = ?";

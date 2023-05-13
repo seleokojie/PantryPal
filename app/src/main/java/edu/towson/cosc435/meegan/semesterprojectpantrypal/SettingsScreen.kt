@@ -68,7 +68,6 @@ fun SettingsScreen() {
             icon = Icons.Default.Email,
             text = "Help",
             onClick = {
-                Log.d("help icon", "clicked")
                 showHelpDialog.value = true }
         )
         if (showHelpDialog.value) {

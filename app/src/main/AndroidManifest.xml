@@ -6,7 +6,7 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/ic_launcher_foreground"
+        android:icon="@mipmap/app_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.SemesterProjectPantryPal"
@@ -14,7 +14,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.SemesterProjectPantryPal">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

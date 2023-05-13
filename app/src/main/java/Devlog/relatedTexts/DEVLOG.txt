@@ -35,3 +35,5 @@ As a User, I want to be able to access a settings page to change how I view my a
 was stuck for awhile because my database wasnt being populated with data, the reason being is that
 I had to clear the app data because it will only make the call to the database once and it just wasnt
 there when i tried to use it
+
+Fix the fact that userID is always -1

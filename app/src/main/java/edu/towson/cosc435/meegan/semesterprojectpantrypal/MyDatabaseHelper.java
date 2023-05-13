@@ -57,6 +57,17 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(createItemsTable);
     }
 
+    public int createUser(String username, String password, String email) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_USERNAME, username);
+        values.put(COL_PASSWORD, password);
+        // Add other user data as needed, such as email
+        // values.put(COL_EMAIL, email);
+        long userId = db.insert(TABLE_USERS, null, values);
+        db.close();
+        return (int) userId;
+    }
     public void addItem(Item item) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -66,7 +77,9 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_ITEM_QUANTITY, item.getQuantity());
         values.put(COL_ITEM_EXPIRATION_DATE, item.getExpirationDate());
         db.insert(TABLE_ITEMS, null, values);
+        Log.d("NEW ITEM: ", item.toString());
         db.close();
+
     }
 
     public List<Item> getItemsForUser(int userId) {

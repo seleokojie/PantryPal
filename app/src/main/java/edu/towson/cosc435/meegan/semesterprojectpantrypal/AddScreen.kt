@@ -33,6 +33,7 @@ fun AddScreen() {
     val year = calendar[Calendar.YEAR]
     val month = calendar[Calendar.MONTH]
     val dayOfMonth = calendar[Calendar.DAY_OF_MONTH]
+    val databaseHelper = MyDatabaseHelper(context)
 
     //For InputFields
     val items = remember { AppState.items.toMutableList() }
@@ -103,7 +104,7 @@ fun AddScreen() {
                 quantityState.value.text,
                 expirationDateState.value.text
             )
-            items.add(newItem)
+            databaseHelper.addItem(newItem)
             AppState.items = items.toList()
             confirmationMessage.value = "Item added to inventory"
             showMessage.value = true

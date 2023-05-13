@@ -14,6 +14,6 @@ package edu.towson.cosc435.meegan.semesterprojectpantrypal
 
 object AppState {
         var items: List<Item> = listOf()
-        var loggedInUserId: Int = -1
+        var loggedInUserId = -1
     }
 

@@ -1,5 +1,6 @@
 package edu.towson.cosc435.meegan.semesterprojectpantrypal
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.util.Log
 import android.widget.DatePicker
@@ -8,24 +9,41 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
+
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun AddScreen() {
+
+    //For Date
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
     var selectedDateText by remember { mutableStateOf("") }
@@ -42,6 +60,7 @@ fun AddScreen() {
     val expirationDateState = remember { mutableStateOf(TextFieldValue("")) }
     val errorState = remember { mutableStateOf(false) }
     val categories = listOf("Fruit", "Vegetable", "Meat", "Dairy", "Bakery")
+
     //Choosing of Date
     val datePicker = DatePickerDialog(
         context,
@@ -50,13 +69,20 @@ fun AddScreen() {
             expirationDateState.value = TextFieldValue(selectedDateText)
         }, year, month, dayOfMonth
     )
-
     //Can't choose past dates
     datePicker.datePicker.minDate = calendar.timeInMillis
 
     //Item added confirmation
     val confirmationMessage = remember { mutableStateOf("") }
     val showMessage = remember { mutableStateOf(false) }
+
+    //For AutoCompleteTextView
+    val autoCompleteItems = remember { mutableStateListOf<String>() }
+    val selectedItemIndex = remember { mutableStateOf(0) }
+    val isDropdownVisible = remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -77,91 +103,142 @@ fun AddScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        InputField("Item name", itemNameState, onlyLet = true)
-        InputField("Category", categoryState, categories = categories, onlyLet = true)
-        InputField("Quantity", quantityState, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), onlyNum = true)
-        InputField(
-            "Expiration Date (MM-DD-YYYY)",
-            expirationDateState,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            onClick = {
-                datePicker.show()
-            }
-        )
-        Button(onClick = {
-            if (itemNameState.value.text.isBlank() || categoryState.value.text.isBlank() || quantityState.value.text.isBlank() || expirationDateState.value.text.isBlank()) {
-                errorState.value = true
-                return@Button
-            } else {
-                errorState.value = false
-            }
 
-            val userId = 1
-            val newItem = Item(
-                userId = userId,
-                name = itemNameState.value.text,
-                category = categoryState.value.text,
-                quantity = quantityState.value.text,
-                expirationDate = expirationDateState.value.text
-            )
-            Log.d("Item", newItem.toString())
-            items.add(newItem)
-            databaseHelper.addItem(newItem)
-            AppState.items = items.toList()
-            Log.d("Item", AppState.items.toString())
 
-            confirmationMessage.value = "Item added to inventory"
-            showMessage.value = true
+        //Use the AutoCompleteTextView composable to create an autocomplete text field
+        //TODO 1: Make UI look better and more consistent
+        //TODO 2: Have it remove the dropdown when the user clicks outside of the dropdown or when the user clicks on an item
+        //TODO 3: Have it remove the dropdown when the user clicks on the back button
+        //TODO 4: Create new fields for macros and calories that are hidden by default and only show when the user clicks on the item and are editable and are automatically filled in if the user selects an item from the dropdown
+        //TODO 5: Have it clear the text field when the user clicks on the clear button
 
-            // Clear the input fields
-            itemNameState.value = TextFieldValue("")
-            categoryState.value = TextFieldValue("")
-            quantityState.value = TextFieldValue("")
-            expirationDateState.value = TextFieldValue("")
-        }){
-            Text("Confirm")
-        }
+        AutoCompleteTextView(
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester),
+            query = itemNameState.value.text,
+            queryLabel = "Item Name",
+            onQueryChanged = { it ->
+                itemNameState.value = TextFieldValue(it)
 
-        if (errorState.value) {
-            Text("Please fill out all fields",
-                color = Color.Red,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-
-            )
-        }
-
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            if (items.isNotEmpty()) {
+                // Call the getFoodList function using a coroutine scope
+                coroutineScope.launch {
+                    val foodList = withContext(Dispatchers.IO) {
+                        getFoodList(it)?.hints?.map { it.food.label }?.distinct()?.sortedBy { it.length } ?: listOf()
+                    }
+                    autoCompleteItems.clear()
+                    autoCompleteItems.addAll(foodList)
+                }
+            },
+            predictions = autoCompleteItems,
+            onItemClick = {
+                itemNameState.value = TextFieldValue(it)
+                isDropdownVisible.value = false
+            },
+            itemContent = { item ->
                 Text(
-                    text = "Current Inventory",
-                    style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(16.dp)
+                    text = item,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
                 )
             }
-        }
+        )
 
-        Spacer(modifier = Modifier.height(4.dp))
-        LazyColumn {
-            items.forEach { item ->
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
-                            .background(Color.White)
-                            .padding(8.dp)
-                    ) {
-                        Text(
-                            "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}",
-                            modifier = Modifier.padding(10.dp)
-                        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Show the remaining fields only if an item is selected
+        if (selectedItemIndex.value != -1) {
+            Column {
+                InputField("Category", categoryState, categories = categories, onlyLet = true)
+                InputField(
+                    "Quantity",
+                    quantityState,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    onlyNum = true
+                )
+                InputField(
+                    "Expiration Date (MM-DD-YYYY)",
+                    expirationDateState,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    onClick = { datePicker.show() }
+                )
+            }
+
+            Button(onClick = {
+                if (itemNameState.value.text.isBlank() || categoryState.value.text.isBlank() || quantityState.value.text.isBlank() || expirationDateState.value.text.isBlank()) {
+                    errorState.value = true
+                    return@Button
+                } else {
+                    errorState.value = false
+                }
+
+                val newItem = Item(
+                    AppState.loggedInUserId,
+                    itemNameState.value.text,
+                    categoryState.value.text,
+                    quantityState.value.text,
+                    expirationDateState.value.text
+                )
+                Log.d("Item", itemNameState.toString())
+                items.add(newItem)
+                databaseHelper.addItem(newItem)
+                AppState.items = items.toList()
+                Log.d("Item", AppState.items.toString())
+
+                confirmationMessage.value = "Item added to inventory"
+                showMessage.value = true
+
+                // Clear the input fields
+                itemNameState.value = TextFieldValue("")
+                categoryState.value = TextFieldValue("")
+                quantityState.value = TextFieldValue("")
+                expirationDateState.value = TextFieldValue("")
+            }) {
+                Text("Confirm")
+            }
+
+            if (errorState.value) {
+                Text(
+                    "Please fill out all fields",
+                    color = Color.Red,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+
+                    )
+            }
+
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                if (items.isNotEmpty()) {
+                    Text(
+                        text = "Current Inventory",
+                        style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+            LazyColumn {
+                items.forEach { item ->
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                                .background(Color.White)
+                                .padding(8.dp)
+                        ) {
+                            Text(
+                                "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}",
+                                modifier = Modifier.padding(10.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
-
 
         // Display a confirmation message if an item was successfully added
         Spacer(modifier = Modifier.height(16.dp))
@@ -173,6 +250,110 @@ fun AddScreen() {
     }
 }
 
+//Uses the EdamamService to get a list of potential foods based on the user's input
+suspend fun getFoodList(food: String): FoodDataResponse? {
+    return withContext(Dispatchers.IO) {
+        val edamamService = EdamamService(BuildConfig.app_id, BuildConfig.app_key)
+        edamamService.getFoodData(food)
+    }
+}
+
+//Creates an autocomplete text field
+@Composable
+fun <T> AutoCompleteTextView(
+    modifier: Modifier,
+    query: String,
+    queryLabel: String,
+    onQueryChanged: (String) -> Unit = {},
+    predictions: List<T>,
+    onDoneActionClick: () -> Unit = {},
+    onClearClick: () -> Unit = {},
+    onItemClick: (T) -> Unit = {},
+    itemContent: @Composable (T) -> Unit = {}
+) {
+
+    val view = LocalView.current
+    val lazyListState = rememberLazyListState()
+    LazyColumn(
+        state = lazyListState,
+        modifier = modifier.heightIn(max = TextFieldDefaults.MinHeight * 6)
+    ) {
+
+        item {
+            QuerySearch(
+                query = query,
+                label = queryLabel,
+                onQueryChanged = onQueryChanged,
+                onDoneActionClick = {
+                    view.clearFocus()
+                    onDoneActionClick()
+                },
+                onClearClick = {
+                    onClearClick()
+                }
+            )
+        }
+
+        if (predictions.isNotEmpty()) {
+            items(predictions) { prediction ->
+                Row(
+                    Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .clickable {
+                            view.clearFocus()
+                            onItemClick(prediction)
+                        }
+                ) {
+                    itemContent(prediction)
+                }
+            }
+        }
+    }
+}
+
+//Pulls the list of names from the FoodDataResponse and returns them as a list of strings
+@Composable
+fun QuerySearch(
+    modifier: Modifier = Modifier,
+    query: String,
+    label: String,
+    onDoneActionClick: () -> Unit = {},
+    onClearClick: () -> Unit = {},
+    onQueryChanged: (String) -> Unit
+) {
+    var showClearButton by remember { mutableStateOf(false) }
+
+    OutlinedTextField(
+        modifier = modifier
+            .fillMaxWidth()
+            .onFocusChanged { focusState ->
+                showClearButton = (focusState.isFocused)
+            },
+        value = query,
+        onValueChange = onQueryChanged,
+        label = { Text(text = label) },
+        textStyle = MaterialTheme.typography.subtitle1,
+        singleLine = true,
+        trailingIcon = {
+            if (showClearButton) {
+                IconButton(onClick = { onClearClick() }) {
+                    Icon(imageVector = Icons.Filled.Close, contentDescription = "Clear")
+                }
+            }
+
+        },
+        keyboardActions = KeyboardActions(onDone = {
+            onDoneActionClick()
+        }),
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Text
+        )
+    )
+}
+
+//Creates text fields for the user to input data
 @Composable
 fun InputField(
     label: String,
@@ -251,6 +432,60 @@ fun InputField(
     Spacer(modifier = Modifier.height(8.dp))
 }
 
+/*@Composable
+fun AutoCompleteTextField(
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    label: String,
+    suggestions: List<String>,
+    onItemClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val autoCompletePopupShown = remember { mutableStateOf(false) }
+
+    Box(modifier = modifier) {
+        TextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text(label) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = { autoCompletePopupShown.value = false }
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged { focusState ->
+                    autoCompletePopupShown.value = focusState.isFocused
+                }
+        )
+
+        if (autoCompletePopupShown.value && suggestions.isNotEmpty()) {
+            DropdownMenu(
+                expanded = autoCompletePopupShown.value,
+                onDismissRequest = { autoCompletePopupShown.value = false },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(Alignment.Top)
+            ) {
+                suggestions.forEach { suggestion ->
+                    DropdownMenuItem(
+                        onClick = {
+                            onItemClick(suggestion)
+                            autoCompletePopupShown.value = false
+                        }
+                    ) {
+                        Text(suggestion)
+                    }
+                }
+            }
+        }
+    }
+}*/
+
 data class Item(
     val userId: Int,
     val name: String,
@@ -258,8 +493,6 @@ data class Item(
     val quantity: String,
     val expirationDate: String
 )
-
-
 
 @Composable
 fun ConfirmationMessage(

@@ -26,8 +26,6 @@ import kotlinx.coroutines.delay
 import java.util.*
 @Composable
 fun AddScreen() {
-
-    //For Date
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
     var selectedDateText by remember { mutableStateOf("") }
@@ -98,14 +96,15 @@ fun AddScreen() {
                 errorState.value = false
             }
 
+            val userId = 1
             val newItem = Item(
-                AppState.loggedInUserId,
-                itemNameState.value.text,
-                categoryState.value.text,
-                quantityState.value.text,
-                expirationDateState.value.text
+                userId = userId,
+                name = itemNameState.value.text,
+                category = categoryState.value.text,
+                quantity = quantityState.value.text,
+                expirationDate = expirationDateState.value.text
             )
-            Log.d("Item", itemNameState.toString())
+            Log.d("Item", newItem.toString())
             items.add(newItem)
             databaseHelper.addItem(newItem)
             AppState.items = items.toList()

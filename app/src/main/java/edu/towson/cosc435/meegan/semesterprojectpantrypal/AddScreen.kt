@@ -1,6 +1,7 @@
 package edu.towson.cosc435.meegan.semesterprojectpantrypal
 
 import android.app.DatePickerDialog
+import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -104,8 +105,12 @@ fun AddScreen() {
                 quantityState.value.text,
                 expirationDateState.value.text
             )
+            Log.d("Item", itemNameState.toString())
+            items.add(newItem)
             databaseHelper.addItem(newItem)
             AppState.items = items.toList()
+            Log.d("Item", AppState.items.toString())
+
             confirmationMessage.value = "Item added to inventory"
             showMessage.value = true
 

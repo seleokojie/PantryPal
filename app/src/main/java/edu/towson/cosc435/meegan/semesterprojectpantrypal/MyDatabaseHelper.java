@@ -68,6 +68,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return (int) userId;
     }
+
+
     public void addItem(Item item) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -77,7 +79,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_ITEM_QUANTITY, item.getQuantity());
         values.put(COL_ITEM_EXPIRATION_DATE, item.getExpirationDate());
         db.insert(TABLE_ITEMS, null, values);
-        Log.d("NEW ITEM: ", item.toString());
+        Log.d("\n\nNEW ITEM: \n\n", item.toString());
         db.close();
 
     }

@@ -56,7 +56,7 @@ fun AddScreen() {
     val items = remember { AppState.items.toMutableList() }
     val itemNameState = remember { mutableStateOf(TextFieldValue("")) }
     val categoryState = remember { mutableStateOf(TextFieldValue("")) }
-    val quantityState = remember { mutableStateOf(TextFieldValue("")) }
+    val quantityState = remember { mutableStateOf(TextFieldValue("1")) }
     val expirationDateState = remember { mutableStateOf(TextFieldValue("")) }
     val nutrientsState = remember { mutableStateOf<Nutrients?>(null) }
     val baseNutrients = remember { mutableStateOf(nutrientsState.value) }
@@ -367,11 +367,8 @@ fun AddScreen() {
                     fiberState.value.text.toDoubleOrNull()
                 )
 
-                Log.d("Item", itemNameState.toString())
                 items.add(newItem)
                 databaseHelper.addItem(newItem)
-                AppState.items = items.toList()
-                Log.d("Item", AppState.items.toString())
 
                 confirmationMessage.value = "Item added to inventory"
                 showMessage.value = true

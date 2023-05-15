@@ -62,14 +62,8 @@ fun HomeScreenPreview() {
 
 @Composable
 fun ItemCard(item: Item) {
-    val colors = listOf(
-        Color.Blue,
-        Color.Green,
-        Color.Red,
-        // Add more colors for each category
-    )
-
-    val categoryColor = colors[item.category.hashCode() % colors.size]
+    //Set val categoryColor to the color of the category of the item using the categoryColorMap function
+    val categoryColor = mapCategoryToColor(item.category)
 
     var expanded by remember { mutableStateOf(false) }
 
@@ -157,4 +151,45 @@ fun dateToInt(date: String): Long {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val localDate = LocalDate.parse(date, formatter)
     return localDate.toEpochDay()
+}
+fun mapCategoryToColor(category: String): Color {
+    return when (category) {
+        "Baking Ingredients and Supplies" -> Color(0xFFFF9800) // Orange
+        "Beans, Peas, and Lentils" -> Color(0xFF9C27B0) // Purple
+        "Beverages" -> Color(0xFF00BCD4) // Cyan
+        "Breakfast Foods" -> Color(0xFF8BC34A) // Light Green
+        "Canned Goods" -> Color(0xFFFF5722) // Deep Orange
+        "Cheese" -> Color(0xFF795548) // Brown
+        "Condiments" -> Color(0xFF9E9E9E) // Grey
+        "Dairy" -> Color(0xFFFF9800) // Orange
+        "Dessert" -> Color(0xFFE91E63) // Pink
+        "Eggs" -> Color(0xFF8BC34A) // Light Green
+        "Frozen Foods" -> Color(0xFF9C27B0) // Purple
+        "Fruit" -> Color(0xFFE57373) // Red
+        "Grains (Refined)" -> Color(0xFF607D8B) // Blue Gray
+        "Grains (Whole)" -> Color(0xFF795548) // Brown
+        "Juice" -> Color(0xFFFF8A65) // Orange
+        "Legumes" -> Color(0xFF4CAF50) // Green
+        "Meats (Processed)" -> Color(0xFFE91E63) // Pink
+        "Meats (Red)" -> Color(0xFFF44336) // Red
+        "Meats (White)" -> Color(0xFF9E9E9E) // Grey
+        "Non-Dairy Calcium Alternatives" -> Color(0xFFFF5722) // Deep Orange
+        "Nuts and Seeds" -> Color(0xFFCDDC39) // Lime
+        "Oils" -> Color(0xFF9E9E9E) // Grey
+        "Other" -> Color(0xFF9E9E9E) // Grey
+        "Pasta" -> Color(0xFF607D8B) // Blue Gray
+        "Poultry" -> Color(0xFF03A9F4) // Light Blue
+        "Sauce" -> Color(0xFF8BC34A) // Light Green
+        "Seafood" -> Color(0xFF00BCD4) // Cyan
+        "Snacks and Treats" -> Color(0xFFCDDC39) // Lime
+        "Soda" -> Color(0xFFFFFF00) // Yellow
+        "Soy Products" -> Color(0xFFFFC107) // Amber
+        "Spices and Herbs" -> Color(0xFF795548) // Brown
+        "Vegetables (Dark-Green)" -> Color(0xFF4CAF50) // Green
+        "Vegetables (Red and Orange)" -> Color(0xFFFF5722) // Deep Orange
+        "Vegetables (Starchy)" -> Color(0xFFFFEB3B) // Yellow
+        "Vegetables (Other)" -> Color(0xFF2196F3) // Blue
+        "Yogurt" -> Color(0xFF607D8B) // Blue Gray
+        else -> Color.Black // Default color if category is not found
+    }
 }

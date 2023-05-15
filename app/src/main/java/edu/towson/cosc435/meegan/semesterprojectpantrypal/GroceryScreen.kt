@@ -1,6 +1,6 @@
 package edu.towson.cosc435.meegan.semesterprojectpantrypal
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -79,7 +79,7 @@ fun GroceryScreen() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                            .border(1.dp, Color.LightGray, RoundedCornerShape(7.dp))
+                            .background(Color.LightGray, shape = RoundedCornerShape(7.dp))
                             .padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -105,7 +105,8 @@ fun GroceryScreen() {
                                 .align(Alignment.CenterVertically)
                                 .fillMaxWidth()
                                 .wrapContentSize(Alignment.Center),
-                            textDecoration = if (checkedStates[item] == true) TextDecoration.LineThrough else TextDecoration.None
+                            textDecoration = if (checkedStates[item] == true) TextDecoration.LineThrough else TextDecoration.None,
+                            color = if (checkedStates[item] == true) Color.Gray else Color.Black
                         )
                         IconButton(onClick = {
                             checkedStates.remove(item)
@@ -115,6 +116,21 @@ fun GroceryScreen() {
                         }
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    val crossedOutItems = checkedStates.filterValues { it }.keys.toList()
+                    crossedOutItems.forEach {
+                        checkedStates.remove(it)
+                        groceryItems.remove(it)
+                    }
+                },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text(text = "Clear Crossed-out Items")
             }
         }
     }

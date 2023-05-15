@@ -34,7 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -135,12 +134,6 @@ fun AddScreen() {
 
 
         //Use the AutoCompleteTextView composable to create an autocomplete text field
-        //TODO 1: Make UI look better and more consistent
-        //TODO 2: Have it remove the dropdown when the user clicks outside of the dropdown or when the user clicks on an item
-        //TODO 3: Have it remove the dropdown when the user clicks on the back button
-        //TODO 4: Create new fields for macros and calories that are hidden by default and only show when the user clicks on the item and are editable and are automatically filled in if the user selects an item from the dropdown
-        //TODO 5: Have it clear the text field when the user clicks on the clear button
-
         AutoCompleteTextView(
             modifier = Modifier
                 .fillMaxWidth()
@@ -321,6 +314,7 @@ fun AddScreen() {
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(8.dp))
             Row {
                 Column(modifier = Modifier.weight(1f)) {
                     InputField(
@@ -439,13 +433,18 @@ fun AddScreen() {
 
         }
 
-        // Display a confirmation message if an item was successfully added
-        Spacer(modifier = Modifier.height(16.dp))
-        ConfirmationMessage(
-            message = confirmationMessage.value,
-            showMessage = showMessage.value,
-            onMessageShown = { showMessage.value = false }
-        )
+        // Display a confirmation message if an item was successfully added using a Dialog
+        if (showMessage.value) {
+            AlertDialog(
+                onDismissRequest = { showMessage.value = false },
+                title = { Text(text = confirmationMessage.value) },
+                confirmButton = {
+                    TextButton(onClick = { showMessage.value = false }) {
+                        Text("OK")
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -651,21 +650,6 @@ data class Item(
     val carbs: Double?,
     val fiber: Double?
 )
-
-@Composable
-fun ConfirmationMessage(
-    message: String,
-    showMessage: Boolean,
-    onMessageShown: () -> Unit
-) {
-    if (showMessage) {
-        LaunchedEffect(Unit) {
-            delay(3000) // Adjust the duration to your preference
-            onMessageShown()
-        }
-        Text(message, Modifier.padding(top = 8.dp))
-    }
-}
 
 fun Double.roundToNearestTens(): Double {
     return (this / 10).roundToInt() * 10.toDouble()

@@ -16,5 +16,5 @@ object AppState {
         var items: List<Item> = listOf()
     var loggedInUserId = 1
 
-    }
+}
 

@@ -2,7 +2,6 @@ package edu.towson.cosc435.meegan.semesterprojectpantrypal
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -91,15 +90,20 @@ fun AddScreen() {
         "Yogurt",
         "Cheese",
         "Sauce",
+        "Snack",
+        "Beverage",
+        "Other",
+        "Dessert",
     )
 
     //Choosing of Date
     val datePicker = DatePickerDialog(
         context,
         { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-            selectedDateText = "${selectedMonth + 1}-$selectedDayOfMonth-$selectedYear"
+            selectedDateText = "$selectedYear-${if (selectedMonth + 1 < 10) ("0" + (selectedMonth + 1)) else (selectedMonth + 1)}-$selectedDayOfMonth"
+
             expirationDateState.value = TextFieldValue(selectedDateText)
-        }, year, month, dayOfMonth
+        }, dayOfMonth, month, year
     )
     //Can't choose past dates
     datePicker.datePicker.minDate = calendar.timeInMillis
@@ -251,7 +255,6 @@ fun AddScreen() {
                             val quantityText = newValue.text
                             val quantity = if (quantityText.isEmpty()) 0.0 else quantityText.toDoubleOrNull() ?: 0.0
 
-                            Log.d("Quantity", quantity.toString())
 
                             if(quantity != 0.0) {
                                 // Multiply the base values by the quantity
@@ -364,11 +367,9 @@ fun AddScreen() {
                     fiberState.value.text.toDoubleOrNull()
                 )
 
-                Log.d("Item", itemNameState.toString())
                 items.add(newItem)
                 databaseHelper.addItem(newItem)
                 AppState.items = items.toList()
-                Log.d("Item", AppState.items.toString())
 
                 confirmationMessage.value = "Item added to inventory"
                 showMessage.value = true

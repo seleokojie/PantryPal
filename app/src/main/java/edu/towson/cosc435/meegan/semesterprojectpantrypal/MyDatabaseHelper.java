@@ -116,9 +116,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         db.close();
-
-        Log.d("USERNAMEVALUES", usernames.toString());
-        Log.d("PASSWORDVALUES", passwords.toString());
     }
 
 

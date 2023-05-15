@@ -8,7 +8,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.graphics.Color
 import edu.towson.cosc435.meegan.semesterprojectpantrypal.ui.theme.SemesterProjectPantryPalTheme
 
 
@@ -26,11 +25,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-
-
-// Extension function to convert a HEX color string to a Jetpack Compose Color
-fun String.toColor() = Color(android.graphics.Color.parseColor(this))
 
 
 

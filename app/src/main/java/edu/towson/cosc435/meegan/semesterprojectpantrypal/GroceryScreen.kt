@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
@@ -41,14 +42,13 @@ fun GroceryScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background("#e3ffde".toColor())
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
         ) {
-            TextField(
+            OutlinedTextField(
                 value = newItemText.value,
                 onValueChange = { newItemText.value = it },
                 label = { Text("Add item to Grocery list") },
@@ -56,6 +56,12 @@ fun GroceryScreen() {
                     .align(Alignment.CenterHorizontally)
                     .fillMaxWidth()
                     .padding(top = 16.dp),
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Add Icon"
+                    )
+                },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {
                     if (newItemText.value.isNotBlank()) {

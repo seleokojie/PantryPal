@@ -24,7 +24,7 @@ fun MainScreen() {
         topBar = {
             //topBar will display only for Add screen
             if (currentRoute == NavigationItem.Add.route) {
-                TopBar()
+                //TopBar()
             }
             else if (currentRoute == NavigationItem.Home.route){
                 SearchBar(label = "Search", hintText = "Type to search...")

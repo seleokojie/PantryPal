@@ -20,7 +20,7 @@ fun HomeScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background("#e3ffde".toColor())
+            .background(Color.White)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -36,7 +36,7 @@ fun HomeScreen() {
 
                     ) {
                         Text(
-                            "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}\nCalories: ${item.calories}\nProtein: ${item.protein}\nFat: ${item.fat}\nCarbs: ${item.carbs}\nFiber: ${item.fiber}",
+                            "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}",
                             modifier = Modifier
                                 .padding(10.dp)
                         )

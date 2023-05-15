@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import edu.towson.cosc435.meegan.semesterprojectpantrypal.ui.theme.mediumGreen
 import kotlinx.coroutines.launch
 
 
@@ -34,13 +35,12 @@ fun SettingsScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFD3D3D3))
             .padding(16.dp),
         verticalArrangement = Arrangement.Top
     ) {
         Text(
             text = "Preferences",
-            color = Color.Blue,
+            color = mediumGreen,
             fontSize = 20.sp, // Make the text bigger
             modifier = Modifier
                 .align(Alignment.Start)
@@ -86,7 +86,7 @@ fun SettingsScreen() {
         Divider() // Add a line separating settings
         Text(
             text = "Information",
-            color = Color.Blue,
+            color = mediumGreen,
             fontSize = 20.sp, // Make the text bigger
             modifier = Modifier
                 .align(Alignment.Start)

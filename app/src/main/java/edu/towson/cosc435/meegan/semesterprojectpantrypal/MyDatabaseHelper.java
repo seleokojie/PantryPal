@@ -25,11 +25,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_ITEM_CATEGORY = "category";
     public static final String COL_ITEM_QUANTITY = "quantity";
     public static final String COL_ITEM_EXPIRATION_DATE = "expiration_date";
-    public static final String COL_ITEM_CALORIES = "calories";
-    public static final String COL_ITEM_PROTEIN = "protein";
-    public static final String COL_ITEM_FAT = "fat";
-    public static final String COL_ITEM_CARBS = "carbs";
-    public static final String COL_ITEM_FIBER = "fiber";
 
     private final Context mContext;
 
@@ -55,11 +50,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
                 COL_ITEM_CATEGORY + " TEXT, " +
                 COL_ITEM_QUANTITY + " TEXT, " +
                 COL_ITEM_EXPIRATION_DATE + " TEXT, " +
-                COL_ITEM_CALORIES + " TEXT, " +
-                COL_ITEM_PROTEIN + " TEXT, " +
-                COL_ITEM_FAT + " TEXT, " +
-                COL_ITEM_CARBS + " TEXT, " +
-                COL_ITEM_FIBER + " TEXT, " +
                 "FOREIGN KEY (" + COL_USER_ID + ") REFERENCES " + TABLE_USERS + " (" + COL_USER_ID + "));";
         db.execSQL(createItemsTable);
         displayXMLvalues();
@@ -72,11 +62,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_ITEM_CATEGORY, item.getCategory());
         values.put(COL_ITEM_QUANTITY, item.getQuantity());
         values.put(COL_ITEM_EXPIRATION_DATE, item.getExpirationDate());
-        values.put(COL_ITEM_CALORIES, item.getCalories());
-        values.put(COL_ITEM_PROTEIN, item.getProtein());
-        values.put(COL_ITEM_FAT, item.getFat());
-        values.put(COL_ITEM_CARBS, item.getCarbs());
-        values.put(COL_ITEM_FIBER, item.getFiber());
         db.insert(TABLE_ITEMS, null, values);
         Log.d("NEW ITEM:", item.toString());
         db.close();

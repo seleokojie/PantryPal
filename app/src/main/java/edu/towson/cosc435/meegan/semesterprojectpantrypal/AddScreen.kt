@@ -77,16 +77,20 @@ fun AddScreen() {
         "Other Vegetables",
         "Whole Grains",
         "Refined Grains",
-        "Meats",
+        "Meats (Red)",
+        "Meats (White)",
+        "Processed Meats",
         "Poultry",
         "Seafood",
         "Eggs",
         "Nuts and Seeds",
         "Soy Products",
-        "Milk",
+        "Dairy",
         "Non-Dairy Calcium Alternatives",
+        "Oils",
         "Yogurt",
-        "Cheese"
+        "Cheese",
+        "Sauce",
     )
 
     //Choosing of Date
@@ -116,22 +120,15 @@ fun AddScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background("#e3ffde".toColor())
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(
-            onClick = { /* Handle barcode scanner functionality here */ },
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .fillMaxWidth(0.80f),
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.LightGray)
-        ) {
-            Text("Barcode Scanner", color = Color.Black, fontSize = 19.sp)
-        }
-
+        Text(
+            text = "Add Item",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Medium
+        )
         Spacer(modifier = Modifier.height(16.dp))
-
 
         //Use the AutoCompleteTextView composable to create an autocomplete text field
         AutoCompleteTextView(
@@ -139,7 +136,7 @@ fun AddScreen() {
                 .fillMaxWidth()
                 .focusRequester(focusRequester),
             query = itemNameState.value.text,
-            queryLabel = "Item Name",
+            queryLabel = "Look Up Food Item",
             onQueryChanged = { it ->
                 itemNameState.value = TextFieldValue(it)
 
@@ -359,12 +356,7 @@ fun AddScreen() {
                     itemNameState.value.text,
                     categoryState.value.text,
                     quantityState.value.text,
-                    expirationDateState.value.text,
-                    caloriesState.value.text.toDoubleOrNull(),
-                    proteinState.value.text.toDoubleOrNull(),
-                    fatState.value.text.toDoubleOrNull(),
-                    carbsState.value.text.toDoubleOrNull(),
-                    fiberState.value.text.toDoubleOrNull()
+                    expirationDateState.value.text
                 )
 
                 Log.d("Item", itemNameState.toString())
@@ -643,12 +635,7 @@ data class Item(
     val name: String,
     val category: String,
     val quantity: String,
-    val expirationDate: String,
-    val calories: Double?,
-    val protein: Double?,
-    val fat: Double?,
-    val carbs: Double?,
-    val fiber: Double?
+    val expirationDate: String
 )
 
 fun Double.roundToNearestTens(): Double {

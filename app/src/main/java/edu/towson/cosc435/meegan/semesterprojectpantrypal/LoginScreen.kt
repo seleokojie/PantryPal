@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
@@ -56,7 +57,7 @@ fun LoginScreen(context: Context) {
                 fontSize = 32.sp,
                 text = "Login",
             )
-            TextField(
+            OutlinedTextField(
                 value = email,
                 onValueChange = { newEmail ->
                     email = newEmail
@@ -64,7 +65,7 @@ fun LoginScreen(context: Context) {
                 label = { Text("Email") }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            TextField(
+            OutlinedTextField(
                 value = password,
                 onValueChange = { newPassword ->
                     password = newPassword
@@ -91,7 +92,7 @@ fun LoginScreen(context: Context) {
                     }
                 }
             ) {
-                Text("Login")
+                Text("Log In")
             }
         }
     }

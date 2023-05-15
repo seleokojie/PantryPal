@@ -1,10 +1,11 @@
 package edu.towson.cosc435.meegan.semesterprojectpantrypal
 
+import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import com.google.gson.Gson
+//import com.google.gson.Gson
 
 class EdamamService(private val appId: String, private val appKey: String) {
     private val httpClient = OkHttpClient()

@@ -38,8 +38,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
+import kotlin.math.roundToInt
 
-@SuppressLint("CoroutineCreationDuringComposition")
+@SuppressLint("CoroutineCreationDuringComposition", "UnrememberedMutableState")
 @Composable
 fun AddScreen() {
 
@@ -58,7 +59,15 @@ fun AddScreen() {
     val categoryState = remember { mutableStateOf(TextFieldValue("")) }
     val quantityState = remember { mutableStateOf(TextFieldValue("")) }
     val expirationDateState = remember { mutableStateOf(TextFieldValue("")) }
+    val nutrientsState = remember { mutableStateOf<Nutrients?>(null) }
+    val baseNutrients = remember { mutableStateOf(nutrientsState.value) }
+    val caloriesState = remember { mutableStateOf(TextFieldValue("")) }
+    val proteinState = remember { mutableStateOf(TextFieldValue("")) }
+    val fatState = remember { mutableStateOf(TextFieldValue("")) }
+    val carbsState = remember { mutableStateOf(TextFieldValue("")) }
+    val fiberState = remember { mutableStateOf(TextFieldValue("")) }
     val errorState = remember { mutableStateOf(false) }
+
     val categories = listOf(
         "Fruit",
         "Fruit Juice",
@@ -154,11 +163,29 @@ fun AddScreen() {
                 isCategoryDropdownVisible.value = false
             },
             predictions = autoCompleteItems,
-            onItemClick = {
-                itemNameState.value = TextFieldValue(it)
+            onItemClick = { selectedItem ->
+                itemNameState.value = TextFieldValue(selectedItem)
                 isItemNameDropdownVisible.value = false
                 autoCompleteItems.clear()
                 selectedItemIndex.value = 0
+
+                coroutineScope.launch {
+                    val foodList = withContext(Dispatchers.IO) {
+                        getFoodList(selectedItem)
+                    }
+                    val selectedFoodHint = foodList?.hints?.find { it.food.label == selectedItem }
+
+                    // Autofill the nutrient fields based on the selected item
+                    val selectedNutrients = selectedFoodHint?.food?.nutrients
+                    nutrientsState.value = selectedNutrients
+                    caloriesState.value = TextFieldValue(selectedNutrients?.ENERC_KCAL?.toInt().toString())
+                    proteinState.value = TextFieldValue(selectedNutrients?.PROCNT?.roundToNearestTens().toString())
+                    fatState.value = TextFieldValue(selectedNutrients?.FAT?.roundToNearestTens().toString())
+                    carbsState.value = TextFieldValue(selectedNutrients?.CHOCDF?.roundToNearestTens().toString())
+                    fiberState.value = TextFieldValue(selectedNutrients?.FIBTG?.roundToNearestTens().toString())
+
+                    baseNutrients.value = selectedNutrients
+                }
             },
             itemContent = { item ->
                 Text(
@@ -180,137 +207,235 @@ fun AddScreen() {
 
         // Show the remaining fields only if an item is selected
         if (selectedItemIndex.value != -1) {
-        //Add an autocomplete text field for the category. Use the categories list as the predictions
-        AutoCompleteTextView(
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester),
-            query = categoryState.value.text,
-            queryLabel = "Category",
-            onQueryChanged = {
-                categoryState.value = TextFieldValue(it)
-                autoCompleteItems.clear()
-                autoCompleteItems.addAll(categories.filter { category ->
-                    category.contains(it, ignoreCase = true)
-                }.sortedBy { it.length }.take(3)) // Filter by shortest name and take 3
-                isCategoryDropdownVisible.value = true
-                isItemNameDropdownVisible.value = false
-            },
-            predictions = autoCompleteItems,
-            onItemClick = {
-                categoryState.value = TextFieldValue(it)
-                isCategoryDropdownVisible.value = false
-                autoCompleteItems.clear()
-            },
-            itemContent = { item ->
-                Text(
-                    text = item,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                )
-            },
-            onClearClick = {
-                categoryState.value = TextFieldValue("")
-                isCategoryDropdownVisible.value = false
-                autoCompleteItems.clear()
-            },
-            isDropdownVisible = isCategoryDropdownVisible.value
-        )
+            //Add an autocomplete text field for the category. Use the categories list as the predictions
+            AutoCompleteTextView(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+                query = categoryState.value.text,
+                queryLabel = "Category",
+                onQueryChanged = { it ->
+                    categoryState.value = TextFieldValue(it)
+                    autoCompleteItems.clear()
+                    autoCompleteItems.addAll(categories.filter { category ->
+                        category.contains(it, ignoreCase = true)
+                    }.sortedBy { it.length }.take(3)) // Filter by shortest name and take 3
+                    isCategoryDropdownVisible.value = true
+                    isItemNameDropdownVisible.value = false
+                },
+                predictions = autoCompleteItems,
+                onItemClick = { selectedItem ->
+                    categoryState.value = TextFieldValue(selectedItem)
+                    isCategoryDropdownVisible.value = false
+                    autoCompleteItems.clear()
+                    selectedItemIndex.value = 0
+                },
+                itemContent = { item ->
+                    Text(
+                        text = item,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    )
+                },
+                onClearClick = {
+                    categoryState.value = TextFieldValue("")
+                    isCategoryDropdownVisible.value = false
+                    autoCompleteItems.clear()
+                },
+                isDropdownVisible = isCategoryDropdownVisible.value
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Column {
-                InputField(
-                    "Quantity",
-                    quantityState,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    onlyNum = true
-                )
-                InputField(
-                    "Expiration Date (MM-DD-YYYY)",
-                    expirationDateState,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    onClick = { datePicker.show() }
-                )
-            }
+            // Nutrients fields
+            Row(Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.weight(1f)) {
+                    //Make quantity field but have it so that when a user types in a value to quantity, it multiplies the values in calories, protein, fat, carbs, and fiber by that amount
+                    InputField(
+                        "Quantity",
+                        quantityState,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onlyNum = true,
+                        onValueChanged = { newValue ->
+                            val quantityText = newValue.text
+                            val quantity = if (quantityText.isEmpty()) 0.0 else quantityText.toDoubleOrNull() ?: 0.0
 
+                            Log.d("Quantity", quantity.toString())
 
-                Button(onClick = {
-                    if (itemNameState.value.text.isBlank() || categoryState.value.text.isBlank() || quantityState.value.text.isBlank() || expirationDateState.value.text.isBlank()) {
-                        errorState.value = true
-                        return@Button
-                    } else {
-                        errorState.value = false
-                    }
+                            if(quantity != 0.0) {
+                                // Multiply the base values by the quantity
+                                val multipliedNutrients = baseNutrients.value?.let { base ->
+                                    base.copy(
+                                        ENERC_KCAL = base.ENERC_KCAL * quantity,
+                                        PROCNT = base.PROCNT * quantity,
+                                        FAT = base.FAT * quantity,
+                                        CHOCDF = base.CHOCDF * quantity,
+                                        FIBTG = base.FIBTG * quantity
+                                    )
+                                }
 
-                    val newItem = Item(
-                        AppState.loggedInUserId,
-                        itemNameState.value.text,
-                        categoryState.value.text,
-                        quantityState.value.text,
-                        expirationDateState.value.text
+                                // Update the nutrientsState with the multiplied values
+                                nutrientsState.value = multipliedNutrients
+
+                                // Update the respective text field values with the multiplied values
+                                caloriesState.value = TextFieldValue(multipliedNutrients?.ENERC_KCAL?.toInt().toString())
+                                proteinState.value = TextFieldValue(multipliedNutrients?.PROCNT?.roundToNearestTens().toString())
+                                fatState.value = TextFieldValue(multipliedNutrients?.FAT?.roundToNearestTens().toString())
+                                carbsState.value = TextFieldValue(multipliedNutrients?.CHOCDF?.roundToNearestTens().toString())
+                                fiberState.value = TextFieldValue(multipliedNutrients?.FIBTG?.roundToNearestTens().toString())
+                            } else {
+                                // If the quantity is 0, reset the values to the base values
+                                nutrientsState.value = baseNutrients.value
+                                caloriesState.value = TextFieldValue(baseNutrients.value?.ENERC_KCAL?.toInt().toString())
+                                proteinState.value = TextFieldValue(baseNutrients.value?.PROCNT?.roundToNearestTens().toString())
+                                fatState.value = TextFieldValue(baseNutrients.value?.FAT?.roundToNearestTens().toString())
+                                carbsState.value = TextFieldValue(baseNutrients.value?.CHOCDF?.roundToNearestTens().toString())
+                                fiberState.value = TextFieldValue(baseNutrients.value?.FIBTG?.roundToNearestTens().toString())
+                            }
+                        }
                     )
 
-                    Log.d("Item", itemNameState.toString())
-                    items.add(newItem)
-                    databaseHelper.addItem(newItem)
-                    AppState.items = items.toList()
-                    Log.d("Item", AppState.items.toString())
+                    Spacer(modifier = Modifier.height(8.dp))
+                    InputField(
+                        "Protein",
+                        proteinState,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onlyNum = true
+                    )
 
-                    confirmationMessage.value = "Item added to inventory"
-                    showMessage.value = true
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    InputField(
+                        "Calories",
+                        caloriesState,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onlyNum = true
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    InputField(
+                        "Fat",
+                        fatState,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onlyNum = true
+                    )
+                }
+            }
+            Row {
+                Column(modifier = Modifier.weight(1f)) {
+                    InputField(
+                        "Carbs",
+                        carbsState,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onlyNum = true
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    InputField(
+                        "Fiber",
+                        fiberState,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onlyNum = true
+                    )
+                }
+            }
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Row(Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        InputField(
+                            "Expiration Date (MM-DD-YYYY)",
+                            expirationDateState,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            onClick = { datePicker.show() }
+                        )
+                    }
+                }
+            }
 
-                    // Clear the input fields
-                    itemNameState.value = TextFieldValue("")
-                    categoryState.value = TextFieldValue("")
-                    quantityState.value = TextFieldValue("")
-                    expirationDateState.value = TextFieldValue("")
-                    selectedItemIndex.value = -1
-                }) {
-                    Text("Confirm")
+            Button(onClick = {
+                if (itemNameState.value.text.isBlank() || categoryState.value.text.isBlank() || quantityState.value.text.isBlank() || expirationDateState.value.text.isBlank() || caloriesState.value.text.isBlank() || proteinState.value.text.isBlank() || fatState.value.text.isBlank() || carbsState.value.text.isBlank() || fiberState.value.text.isBlank()) {
+                    errorState.value = true
+                    return@Button
+                } else {
+                    errorState.value = false
                 }
 
-                if (errorState.value) {
+                val newItem = Item(
+                    AppState.loggedInUserId,
+                    itemNameState.value.text,
+                    categoryState.value.text,
+                    quantityState.value.text,
+                    expirationDateState.value.text,
+                    caloriesState.value.text.toDoubleOrNull(),
+                    proteinState.value.text.toDoubleOrNull(),
+                    fatState.value.text.toDoubleOrNull(),
+                    carbsState.value.text.toDoubleOrNull(),
+                    fiberState.value.text.toDoubleOrNull()
+                )
+
+                Log.d("Item", itemNameState.toString())
+                items.add(newItem)
+                databaseHelper.addItem(newItem)
+                AppState.items = items.toList()
+                Log.d("Item", AppState.items.toString())
+
+                confirmationMessage.value = "Item added to inventory"
+                showMessage.value = true
+
+                // Clear the input fields
+                itemNameState.value = TextFieldValue("")
+                categoryState.value = TextFieldValue("")
+                quantityState.value = TextFieldValue("")
+                expirationDateState.value = TextFieldValue("")
+                caloriesState.value = TextFieldValue("")
+                proteinState.value = TextFieldValue("")
+                fatState.value = TextFieldValue("")
+                carbsState.value = TextFieldValue("")
+                fiberState.value = TextFieldValue("")
+                selectedItemIndex.value = -1
+            }) {
+                Text("Confirm")
+            }
+
+            if (errorState.value) {
+                Text(
+                    "Please fill out all fields",
+                    color = Color.Red,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    )
+            }
+
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                if (items.isNotEmpty()) {
                     Text(
-                        "Please fill out all fields",
-                        color = Color.Red,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-
-                        )
+                        text = "Current Inventory",
+                        style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.padding(16.dp)
+                    )
                 }
+            }
 
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    if (items.isNotEmpty()) {
-                        Text(
-                            text = "Current Inventory",
-                            style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-                LazyColumn {
-                    items.forEach { item ->
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
-                                    .background(Color.White)
-                                    .padding(8.dp)
-                            ) {
-                                Text(
-                                    "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}",
-                                    modifier = Modifier.padding(10.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(4.dp))
+            LazyColumn {
+                items.forEach { item ->
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                                .background(Color.White)
+                                .padding(8.dp)
+                        ) {
+                            Text(
+                                "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}",
+                                modifier = Modifier.padding(10.dp)
+                            )
                         }
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
+            }
 
         }
 
@@ -438,7 +563,8 @@ fun InputField(
     onlyNum: Boolean = false,
     onlyLet: Boolean = false,
     categories: List<String> = emptyList(),
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
+    onValueChanged: ((TextFieldValue) -> Unit)? = null
 ) {
     var selectedIndex by remember { mutableStateOf(-1) }
 
@@ -447,12 +573,13 @@ fun InputField(
             var expanded by remember { mutableStateOf(false) }
 
             Box(Modifier.clickable(onClick = { expanded = true })) {
-                TextField(
+                OutlinedTextField(
                     value = if (selectedIndex >= 0) state.value else TextFieldValue(""),
                     onValueChange = { newValue ->
-                        if (onlyNum && newValue.text.any { !it.isDigit() }) return@TextField
-                        if (onlyLet && newValue.text.any { !it.isLetter() && it != ' ' }) return@TextField
+                        if (onlyNum && newValue.text.any { !it.isDigit() }) return@OutlinedTextField
+                        if (onlyLet && newValue.text.any { !it.isLetter() && it != ' ' }) return@OutlinedTextField
                         state.value = newValue
+                        onValueChanged?.invoke(newValue)
                     },
                     label = { Text(label) },
                     modifier = Modifier.fillMaxWidth(),
@@ -479,12 +606,13 @@ fun InputField(
                         .clickable(onClick = onClick)
                         .fillMaxWidth()
                 ) {
-                    TextField(
+                    OutlinedTextField(
                         value = state.value,
                         onValueChange = { newValue ->
-                            if (onlyNum && newValue.text.any { !it.isDigit() }) return@TextField
-                            if (onlyLet && newValue.text.any { !it.isLetter() && it != ' ' }) return@TextField
+                            if (onlyNum && newValue.text.any { !it.isDigit() }) return@OutlinedTextField
+                            if (onlyLet && newValue.text.any { !it.isLetter() && it != ' ' }) return@OutlinedTextField
                             state.value = newValue
+                            onValueChanged?.invoke(newValue)
                         },
                         label = { Text(label) },
                         modifier = Modifier.fillMaxWidth(),
@@ -499,6 +627,7 @@ fun InputField(
                         if (onlyNum && newValue.text.any { !it.isDigit() }) return@TextField
                         if (onlyLet && newValue.text.any { !it.isLetter() && it != ' ' }) return@TextField
                         state.value = newValue
+                        onValueChanged?.invoke(newValue)
                     },
                     label = { Text(label) },
                     modifier = Modifier.fillMaxWidth(),
@@ -510,66 +639,17 @@ fun InputField(
     Spacer(modifier = Modifier.height(8.dp))
 }
 
-/*@Composable
-fun AutoCompleteTextField(
-    value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
-    label: String,
-    suggestions: List<String>,
-    onItemClick: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val autoCompletePopupShown = remember { mutableStateOf(false) }
-
-    Box(modifier = modifier) {
-        TextField(
-            value = value,
-            onValueChange = onValueChange,
-            label = { Text(label) },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = { autoCompletePopupShown.value = false }
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .onFocusChanged { focusState ->
-                    autoCompletePopupShown.value = focusState.isFocused
-                }
-        )
-
-        if (autoCompletePopupShown.value && suggestions.isNotEmpty()) {
-            DropdownMenu(
-                expanded = autoCompletePopupShown.value,
-                onDismissRequest = { autoCompletePopupShown.value = false },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(Alignment.Top)
-            ) {
-                suggestions.forEach { suggestion ->
-                    DropdownMenuItem(
-                        onClick = {
-                            onItemClick(suggestion)
-                            autoCompletePopupShown.value = false
-                        }
-                    ) {
-                        Text(suggestion)
-                    }
-                }
-            }
-        }
-    }
-}*/
-
 data class Item(
     val userId: Int,
     val name: String,
     val category: String,
     val quantity: String,
-    val expirationDate: String
+    val expirationDate: String,
+    val calories: Double?,
+    val protein: Double?,
+    val fat: Double?,
+    val carbs: Double?,
+    val fiber: Double?
 )
 
 @Composable
@@ -585,6 +665,10 @@ fun ConfirmationMessage(
         }
         Text(message, Modifier.padding(top = 8.dp))
     }
+}
+
+fun Double.roundToNearestTens(): Double {
+    return (this / 10).roundToInt() * 10.toDouble()
 }
 
 @Preview(showBackground = true)

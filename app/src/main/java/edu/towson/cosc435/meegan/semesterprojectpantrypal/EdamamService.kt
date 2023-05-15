@@ -13,8 +13,14 @@ class EdamamService(private val appId: String, private val appKey: String) {
         val url = "https://api.edamam.com/api/food-database/v2/parser".toHttpUrlOrNull()
             ?.newBuilder()
             ?.addQueryParameter("ingr", query)
-            ?.addQueryParameter("app_id", appId)
-            ?.addQueryParameter("app_key", appKey)
+
+            //The app_id and app_key are hidden in the local.properties file and would normally be called like this:
+            //?.addQueryParameter("app_id", appId)
+            //?.addQueryParameter("app_key", appKey)
+            //However, for the sake of the project, I have included them here.
+
+            ?.addQueryParameter("app_id", "1f0f700a")
+            ?.addQueryParameter("app_key", "aad5cce9a9aaf24d46302c7f59ecd2ad")
             ?.build()
 
         val request = url?.let {

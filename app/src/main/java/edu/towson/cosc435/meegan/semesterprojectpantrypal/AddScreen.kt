@@ -356,7 +356,12 @@ fun AddScreen() {
                     itemNameState.value.text,
                     categoryState.value.text,
                     quantityState.value.text,
-                    expirationDateState.value.text
+                    expirationDateState.value.text,
+                    caloriesState.value.text.toDoubleOrNull(),
+                    proteinState.value.text.toDoubleOrNull(),
+                    fatState.value.text.toDoubleOrNull(),
+                    carbsState.value.text.toDoubleOrNull(),
+                    fiberState.value.text.toDoubleOrNull()
                 )
 
                 Log.d("Item", itemNameState.toString())
@@ -635,7 +640,12 @@ data class Item(
     val name: String,
     val category: String,
     val quantity: String,
-    val expirationDate: String
+    val expirationDate: String,
+    val calories: Double?,
+    val protein: Double?,
+    val fat: Double?,
+    val carbs: Double?,
+    val fiber: Double?
 )
 
 fun Double.roundToNearestTens(): Double {

@@ -23,12 +23,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <meta-data
+        <!--<meta-data
             android:name = "app_id"
             android:value = "${app_id}" />
         <meta-data
             android:name = "app_key"
-            android:value = "${app_key}" />
+            android:value = "${app_key}" /> -->
     </application>
 
 </manifest>

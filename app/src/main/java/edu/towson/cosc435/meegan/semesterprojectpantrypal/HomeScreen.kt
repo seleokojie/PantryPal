@@ -36,7 +36,7 @@ fun HomeScreen() {
 
                     ) {
                         Text(
-                            "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}",
+                            "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}\nCalories: ${item.calories}\nProtein: ${item.protein}\nFat: ${item.fat}\nCarbs: ${item.carbs}\nFiber: ${item.fiber}",
                             modifier = Modifier
                                 .padding(10.dp)
                         )

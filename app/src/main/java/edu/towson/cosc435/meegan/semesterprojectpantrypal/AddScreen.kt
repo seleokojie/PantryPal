@@ -449,7 +449,7 @@ fun AddScreen() {
 //Uses the EdamamService to get a list of potential foods based on the user's input
 suspend fun getFoodList(food: String): FoodDataResponse? {
     return withContext(Dispatchers.IO) {
-        val edamamService = EdamamService(BuildConfig.app_id, BuildConfig.app_key)
+        val edamamService = EdamamService("", "")
         edamamService.getFoodData(food)
     }
 }

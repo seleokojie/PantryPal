@@ -1,6 +1,7 @@
 package edu.towson.cosc435.meegan.semesterprojectpantrypal
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,6 +18,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
@@ -37,15 +39,8 @@ fun GroceryScreen() {
     val newItemText = viewModel.newItemText
     val checkedStates = viewModel.checkedStates
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
             OutlinedTextField(
                 value = newItemText.value,
                 onValueChange = { newItemText.value = it },
@@ -55,10 +50,7 @@ fun GroceryScreen() {
                     .fillMaxWidth()
                     .padding(top = 16.dp),
                 leadingIcon = {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = "Add Icon"
-                    )
+                    Icon(Icons.Default.Add, contentDescription = "Add Icon")
                 },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {
@@ -75,44 +67,58 @@ fun GroceryScreen() {
             LazyColumn {
                 items(groceryItems) { item ->
                     checkedStates.putIfAbsent(item, false)
-                    Row(
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                            .background(Color.LightGray, shape = RoundedCornerShape(7.dp))
-                            .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Checkbox(
-                            checked = checkedStates[item] == true,
-                            onCheckedChange = { checked ->
-                                checkedStates[item] = checked
-                            },
-                            modifier = Modifier.padding(end = 8.dp),
-                            colors = CheckboxDefaults.colors(
-                                checkmarkColor = Color.White,
-                                checkedColor = Color.Black,
-                                uncheckedColor = Color.Black
+                            .padding(vertical = 4.dp)
+                            .background(Color.Transparent, shape = RoundedCornerShape(7.dp))
+                            .padding(4.dp)
+                            .shadow(elevation = 5.dp, shape = RoundedCornerShape(7.dp))
+                            .border(
+                                width = 1.dp,
+                                color = Color.LightGray,
+                                shape = RoundedCornerShape(bottomStart = 7.dp, bottomEnd = 7.dp, topStart = 7.dp, topEnd = 7.dp)
                             )
-                        )
-
-                        Text(
-                            text = item,
-                            style = MaterialTheme.typography.body1,
+                    ) {
+                        Row(
                             modifier = Modifier
-                                .weight(1f)
-                                .align(Alignment.CenterVertically)
                                 .fillMaxWidth()
-                                .wrapContentSize(Alignment.Center),
-                            textDecoration = if (checkedStates[item] == true) TextDecoration.LineThrough else TextDecoration.None,
-                            color = if (checkedStates[item] == true) Color.Gray else Color.Black
-                        )
-                        IconButton(onClick = {
-                            checkedStates.remove(item)
-                            groceryItems.remove(item)
-                        }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Delete item")
+                                .padding(vertical = 6.dp)
+                                .background(Color.White, shape = RoundedCornerShape(7.dp))
+                                .padding(1.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Checkbox(
+                                checked = checkedStates[item] == true,
+                                onCheckedChange = { checked ->
+                                    checkedStates[item] = checked
+                                },
+                                modifier = Modifier.padding(end = 4.dp),
+                                colors = CheckboxDefaults.colors(
+                                    checkmarkColor = Color.White,
+                                    checkedColor = Color.Black,
+                                    uncheckedColor = Color.Black
+                                )
+                            )
+
+                            Text(
+                                text = item,
+                                style = MaterialTheme.typography.body1,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .align(Alignment.CenterVertically)
+                                    .fillMaxWidth()
+                                    .wrapContentSize(Alignment.Center),
+                                textDecoration = if (checkedStates[item] == true) TextDecoration.LineThrough else TextDecoration.None,
+                                color = if (checkedStates[item] == true) Color.Gray else Color.Black
+                            )
+                            IconButton(onClick = {
+                                checkedStates.remove(item)
+                                groceryItems.remove(item)
+                            }) {
+                                Icon(Icons.Default.Delete, contentDescription = "Delete item")
+                            }
                         }
                     }
                 }
@@ -120,17 +126,19 @@ fun GroceryScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = {
-                    val crossedOutItems = checkedStates.filterValues { it }.keys.toList()
-                    crossedOutItems.forEach {
-                        checkedStates.remove(it)
-                        groceryItems.remove(it)
-                    }
-                },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text(text = "Clear Crossed-out Items")
+            if (groceryItems.isNotEmpty()) {
+                Button(
+                    onClick = {
+                        val crossedOutItems = checkedStates.filterValues { it }.keys.toList()
+                        crossedOutItems.forEach {
+                            checkedStates.remove(it)
+                            groceryItems.remove(it)
+                        }
+                    },
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    Text(text = "Clear Crossed-out Items")
+                }
             }
         }
     }

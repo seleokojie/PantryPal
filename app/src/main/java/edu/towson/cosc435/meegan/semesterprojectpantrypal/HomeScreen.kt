@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -36,8 +39,8 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun HomeScreen() {
-
     val items = remember { AppState.items }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -46,11 +49,19 @@ fun HomeScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        items.forEach { item ->
-            ItemCard(item = item)
+        if (items.isEmpty()) {
+            Text(
+                text = "No Items in Your Pantry :(",
+                style = TextStyle(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                ),
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+        } else {
+            ItemList(items = items)
         }
     }
-
 }
 
 
@@ -61,15 +72,22 @@ fun HomeScreenPreview() {
 }
 
 @Composable
+fun ItemList(items: List<Item>) {
+    LazyColumn(
+        modifier = Modifier.fillMaxHeight()
+    ) {
+        items(items = items) { item ->
+            ItemCard(item = item)
+        }
+    }
+}
+
+@Composable
 fun ItemCard(item: Item) {
-    //Set val categoryColor to the color of the category of the item using the categoryColorMap function
     val categoryColor = mapCategoryToColor(item.category)
-
     var expanded by remember { mutableStateOf(false) }
-
     val borderStrokeWidth = if (expanded) 2.dp else 0.dp
     val borderColor = if (expanded) lightGreen else Color.Transparent
-
     val leftIndicatorHeight by animateDpAsState(if (expanded) 60.dp else 30.dp)
 
     Card(
@@ -85,29 +103,32 @@ fun ItemCard(item: Item) {
                 .padding(10.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                // Left side color indicator strip
                 Box(
                     modifier = Modifier
                         .width(4.dp)
                         .height(leftIndicatorHeight)
                         .background(categoryColor)
                 )
-
                 Spacer(modifier = Modifier.width(16.dp))
-
-                // Middle section: Name
                 Text(
                     text = item.name,
                     style = TextStyle(
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = "Qty: ${item.quantity}",
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        color = Color.Gray
                     )
                 )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Right side: Days left until expiration
             Text(
                 text = "Days left: ${calculateDaysLeft(item.expirationDate)}",
                 style = TextStyle(
@@ -118,10 +139,8 @@ fun ItemCard(item: Item) {
 
             AnimatedVisibility(visible = expanded) {
                 Spacer(modifier = Modifier.height(4.dp))
-
-                // Additional information about the item
                 Column {
-                    Text("Calories: ${item.calories ?: "-"}")
+                    Text("Calories: ${item.calories?.toInt() ?: "-"}")
                     Text("Protein: ${item.protein ?: "-"}")
                     Text("Fat: ${item.fat ?: "-"}")
                     Text("Carbs: ${item.carbs ?: "-"}")
@@ -129,7 +148,6 @@ fun ItemCard(item: Item) {
                 }
             }
         }
-
     }
 }
 
@@ -183,6 +201,7 @@ fun mapCategoryToColor(category: String): Color {
         "Seafood" -> Color(0xFF00BCD4) // Cyan
         "Snacks and Treats" -> Color(0xFFCDDC39) // Lime
         "Soda" -> Color(0xFFFFFF00) // Yellow
+        "Soup" -> Color(0xFFDBCDA6) // Tan
         "Soy Products" -> Color(0xFFFFC107) // Amber
         "Spices and Herbs" -> Color(0xFF795548) // Brown
         "Vegetables (Dark-Green)" -> Color(0xFF4CAF50) // Green

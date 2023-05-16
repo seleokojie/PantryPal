@@ -3,14 +3,11 @@ package edu.towson.cosc435.meegan.semesterprojectpantrypal
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.widget.DatePicker
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -35,8 +32,9 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
-import kotlin.math.roundToInt
 
 @SuppressLint("CoroutineCreationDuringComposition", "UnrememberedMutableState")
 @Composable
@@ -96,6 +94,7 @@ fun AddScreen() {
         "Seafood",
         "Snacks and Treats",
         "Soda",
+        "Soup",
         "Soy Products",
         "Spices and Herbs",
         "Vegetables (Dark-Green)",
@@ -129,6 +128,7 @@ fun AddScreen() {
     val focusRequester = remember { FocusRequester() }
 
     val coroutineScope = rememberCoroutineScope()
+
 
     Column(
         modifier = Modifier
@@ -380,7 +380,7 @@ fun AddScreen() {
                 databaseHelper.addItem(newItem)
                 AppState.items = items.toList()
 
-                confirmationMessage.value = "Item added to inventory"
+                confirmationMessage.value = "Item Added to Inventory"
                 showMessage.value = true
 
                 // Clear the input fields
@@ -406,38 +406,6 @@ fun AddScreen() {
                     fontWeight = FontWeight.Bold,
                     )
             }
-
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                if (items.isNotEmpty()) {
-                    Text(
-                        text = "Current Inventory",
-                        style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-            LazyColumn {
-                items.forEach { item ->
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
-                                .background(Color.White)
-                                .padding(8.dp)
-                        ) {
-                            Text(
-                                "Name: ${item.name}\nCategory: ${item.category}\nQuantity: ${item.quantity}\nEXP: ${item.expirationDate}",
-                                modifier = Modifier.padding(10.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-                }
-            }
-
         }
 
         // Display a confirmation message if an item was successfully added using a Dialog
@@ -659,7 +627,11 @@ data class Item(
 )
 
 fun Double.roundToNearestTens(): Double {
-    return (this / 10).roundToInt() * 10.toDouble()
+    //We wamt to accurately round to the nearest 10th
+    //Doing this by multiplying by 10, rounding, then dividing by 10 is not accurate
+    //This is because of the way floating point numbers are stored in memory
+    //Instead, we will use BigDecimal to accurately round to the nearest 10th
+    return BigDecimal(this.toString()).setScale(1, RoundingMode.HALF_EVEN).toDouble()
 }
 
 @Preview(showBackground = true)

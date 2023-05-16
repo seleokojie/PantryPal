@@ -24,7 +24,7 @@ fun BottomNavigationBar(navController: NavController) {
         NavigationItem.Settings
     )
     //We want to use a Surface to apply a background color to the BottomNavigation and apply a darker color to the elevation shadow
-    Surface(elevation = 24.dp, color = Color(0xFF000000)) {
+    Surface(elevation = 12.dp, color = Color(0xFF000000)) {
 
         BottomNavigation(
             backgroundColor = Color.White,
